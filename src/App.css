@@ -1199,3 +1199,62 @@ select:focus-visible {
     animation: none;
   }
 }
+
+/* 홈 화면 추가 버튼 */
+
+.brand-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.brand-title-text {
+  min-width: 0;
+}
+
+.home-install-button {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 9px 12px;
+  border: 1px solid #438b5b;
+  border-radius: 8px;
+  color: #8af5aa;
+  background: #193222;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.home-install-button:hover {
+  border-color: #64e78e;
+  background: #24472f;
+}
+
+.home-install-button span {
+  font-size: 17px;
+  line-height: 1;
+}
+
+@media (max-width: 650px) {
+  .brand-title-row {
+    align-items: flex-start;
+    gap: 7px;
+  }
+
+  .home-install-button {
+    padding: 7px 8px;
+    gap: 3px;
+    font-size: 10px;
+  }
+}
+
+@media (max-width: 390px) {
+  .brand-title-row {
+    flex-wrap: wrap;
+  }
+}
