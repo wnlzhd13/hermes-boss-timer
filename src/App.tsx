@@ -885,13 +885,153 @@ const [membersError, setMembersError] = useState("");
     return <Auth onLogin={() => setLoggedIn(true)} />;
   }
 
+
 const isMembersPage =
   new URLSearchParams(window.location.search).get("page") === "members";
 
 if (isMembersPage) {
-  if (!sessionChecked) {
-    return <main className="app">로그인 상태 확인 중...</main>;
+  if (!loggedIn || !isAdmin) {
+    return (
+      <main className="app">
+        관리자만 접근할 수 있습니다.
+      </main>
+    );
   }
+
+  return (
+    <main className="app">
+      <section className="admin-panel members-page">
+        <button
+          type="button"
+          className="primary-button"
+          onClick={() => {
+            window.location.href = window.location.pathname;
+          }}
+        >
+          ← 보스 타임으로 돌아가기
+        </button>
+
+        <div>
+          <h2>회원 관리</h2>
+          <p>회원 명단 및 승인 관리</p>
+        </div>
+
+        {membersLoading && (
+          <p>회원 목록을 불러오는 중입니다...</p>
+        )}
+
+        {membersError && <p>{membersError}</p>}
+
+        {!membersLoading && !membersError && (
+          <div className="members-grid">
+            {members.length === 0 ? (
+              <p>등록된 회원이 없습니다.</p>
+            ) : (
+              members.map((member) => (
+                <div key={member.id} className="member-card">
+                  <p>
+                    이름: {member.display_name || "이름 없음"}
+                  </p>
+
+                  <p>
+                    권한:{" "}
+                    {member.role === "admin"
+                      ? "관리자"
+                      : "일반 회원"}
+                  </p>
+
+                  <p>
+                    승인 상태:{" "}
+                    {member.approved ? "승인됨" : "승인 대기"}
+                  </p>
+
+                  <button
+                    type="button"
+                    className="primary-button"
+                    onClick={() => handleMemberApproval(member)}
+                  >
+                    {member.approved ? "승인 취소" : "회원 승인"}
+                  </button>
+
+                  <button
+                    type="button"
+                    className="primary-button"
+                    onClick={() => handleMemberRoleChange(member)}
+                  >
+                    {member.role === "admin"
+                      ? "일반 회원으로 변경"
+                      : "관리자 등록"}
+                  </button>
+                </div>
+              ))
+            )}
+          </div>
+        )}
+      </section>
+    </main>
+  );
+}
+
+
+  return (
+    <main className="app">
+      <section className="admin-panel members-page">
+        <button
+          type="button"
+          className="primary-button"
+          onClick={() => {
+            window.location.href = window.location.pathname;
+          }}
+        >
+          ← 보스 타임으로 돌아가기
+        </button>
+
+        <div>
+          <h2>회원 관리</h2>
+          <p>회원 명단 및 승인 관리</p>
+        </div>
+
+        {membersLoading && <p>회원 목록을 불러오는 중입니다...</p>}
+        {membersError && <p>{membersError}</p>}
+
+        {!membersLoading && !membersError && (
+          <div className="members-grid">
+            {members.map((member) => (
+              <div key={member.id} className="member-card">
+                <p>이름: {member.display_name || "이름 없음"}</p>
+                <p>
+                  권한: {member.role === "admin" ? "관리자" : "일반 회원"}
+                </p>
+                <p>
+                  승인 상태: {member.approved ? "승인됨" : "승인 대기"}
+                </p>
+
+                <button
+                  type="button"
+                  className="primary-button"
+                  onClick={() => handleMemberApproval(member)}
+                >
+                  {member.approved ? "승인 취소" : "회원 승인"}
+                </button>
+
+                <button
+                  type="button"
+                  className="primary-button"
+                  onClick={() => handleMemberRoleChange(member)}
+                >
+                  {member.role === "admin"
+                    ? "일반 회원으로 변경"
+                    : "관리자 등록"}
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+      </section>
+    </main>
+  );
+}
+
 
   if (!loggedIn || !isAdmin) {
     return <main className="app">관리자만 접근할 수 있습니다.</main>;
@@ -936,16 +1076,7 @@ if (isMembersPage) {
                   {member.approved ? "승인 취소" : "회원 승인"}
                 </button>
 
-                <button
-                  className="primary-button"
-                  onClick={() => handleMemberRoleChange(member)}
-                >
-                  {member.role === "admin"
-                    ? "일반 회원으로 변경"
-                    : "관리자 등록"}
-                </button>
-              </div>
-            ))}
+      
           </div>
         )}
         
