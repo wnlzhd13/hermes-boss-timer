@@ -1055,17 +1055,25 @@ select:focus-visible {
   line-height: 1.6;
 }
 
+/* 회원 목록: 한 줄에 두 명 */
+.members-page {
+  align-items: stretch;
+}
+
 .members-page .member-card {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
+  align-content: flex-start;
   gap: 12px 20px;
-  margin-top: 12px;
+  margin-top: 0;
   padding: 18px 20px;
   border: 1px solid rgba(148, 163, 184, 0.22);
   border-radius: 14px;
   background: rgba(255, 255, 255, 0.045);
   transition: border-color 0.2s ease, transform 0.2s ease;
+  min-width: 0;
+  width: 100%;
 }
 
 .members-page .member-card:hover {
