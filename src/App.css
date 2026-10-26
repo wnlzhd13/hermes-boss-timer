@@ -1088,3 +1088,55 @@ select:focus-visible {
 .members-page .member-card .primary-button {
   margin-top: 4px;
 }
+
+
+/* 보스 출현 임박 - 빨간색 발광 강조 */
+.boss-card.spawn-imminent {
+  border: 1px solid #ff304f;
+  border-left: 5px solid #ff304f;
+  background: linear-gradient(
+    100deg,
+    #302027 0%,
+    #262126 50%,
+    #262626 100%
+  );
+  box-shadow:
+    0 0 6px rgba(255, 48, 79, 0.75),
+    0 0 16px rgba(255, 48, 79, 0.4),
+    inset 0 0 12px rgba(255, 48, 79, 0.12);
+  animation: boss-imminent-glow 2s ease-in-out infinite alternate;
+}
+
+.boss-card.spawn-imminent .spawn-time {
+  color: #ff5268;
+  text-shadow:
+    0 0 5px rgba(255, 48, 79, 0.8),
+    0 0 12px rgba(255, 48, 79, 0.45);
+}
+
+.boss-card.spawn-imminent .countdown-label {
+  color: #ff7184;
+}
+
+@keyframes boss-imminent-glow {
+  from {
+    box-shadow:
+      0 0 5px rgba(255, 48, 79, 0.45),
+      0 0 10px rgba(255, 48, 79, 0.2),
+      inset 0 0 8px rgba(255, 48, 79, 0.06);
+  }
+
+  to {
+    box-shadow:
+      0 0 8px rgba(255, 48, 79, 0.8),
+      0 0 20px rgba(255, 48, 79, 0.45),
+      inset 0 0 14px rgba(255, 48, 79, 0.14);
+  }
+}
+
+/* 모바일에서도 기존 카드 크기와 배치 유지 */
+@media (prefers-reduced-motion: reduce) {
+  .boss-card.spawn-imminent {
+    animation: none;
+  }
+}
