@@ -116,7 +116,7 @@ function formatCountdown(target: number, now: number): string {
   const minutes = Math.floor((totalSeconds % 3600) / 60);
   const seconds = totalSeconds % 60;
 
-  if (days > 0) return ${days}일 ${hours}시간 ${minutes}분;
+  if (days > 0) return `$DIL0일 $DIL1시간 $DIL2분`;
 
   return [
     String(hours).padStart(2, "0"),
@@ -404,7 +404,7 @@ const [membersError, setMembersError] = useState("");
   const newRole = member.role === "admin" ? "member" : "admin";
   const actionText = newRole === "admin" ? "관리자 등록" : "일반 회원 변경";
 
-  if (!window.confirm(${member.display_name || "이 회원"}님을 ${actionText}하시겠습니까?)) {
+  if (!window.confirm(`$DIL3님을 $DIL4하시겠습니까?`)) {
     return;
   }
 
@@ -541,7 +541,7 @@ const [membersError, setMembersError] = useState("");
 
       bosses.forEach((boss) => {
         const remaining = boss.nextSpawnAt - currentTime;
-        const notificationKey = ${boss.id}-${boss.nextSpawnAt};
+        const notificationKey = `$DIL5-$DIL6`;
 
         if (
           remaining > 0 &&
@@ -552,7 +552,7 @@ const [membersError, setMembersError] = useState("");
 
           if ("Notification" in window && Notification.permission === "granted") {
             new Notification("보스 출현 5분 전!", {
-              body: ${boss.name} 보스가 곧 출현합니다.,
+              body: `$DIL7 보스가 곧 출현합니다.`,
             });
           }
 
@@ -813,7 +813,7 @@ const [membersError, setMembersError] = useState("");
   async function deleteBoss(boss: Boss) {
     if (
       !window.confirm(
-        "${boss.name}" 보스를 삭제할까요?\n이 보스의 컷 기록도 함께 삭제됩니다.
+       `"$DIL10" 보스를 삭제할까요?\n이 보스의 컷 기록도 함께 삭제됩니다.`
       )
     ) {
       return;
@@ -987,7 +987,7 @@ if (permission === "default") {
   
           {isAdmin && (
   <button
-    className={admin-toggle ${adminMode ? "active" : ""}}
+    className={`admin-toggle $DIL8`}
     onClick={() => {
       setAdminMode((value) => !value);
       closeForm();
@@ -1182,7 +1182,7 @@ if (permission === "default") {
                     <span className="countdown-label">
                       {remaining <= 0
                         ? "출현 시간 경과"
-                        : 남은 시간 ${formatCountdown(boss.nextSpawnAt, now)}}
+                     : `남은 시간 $DIL9`
                     </span>
                   </div>
 
