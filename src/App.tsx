@@ -333,6 +333,58 @@ function BossEditor({
 
 export default function App() {
 
+  const [installPrompt, setInstallPrompt] = useState<any>(null);
+
+  useEffect(() => {
+    const handleBeforeInstallPrompt = (event: Event) => {
+      event.preventDefault();
+      setInstallPrompt(event);
+    };
+
+    window.addEventListener(
+      "beforeinstallprompt",
+      handleBeforeInstallPrompt
+    );
+
+    return () => {
+      window.removeEventListener(
+        "beforeinstallprompt",
+        handleBeforeInstallPrompt
+      );
+    };
+  }, []);
+
+  async function handleAddToHomeScreen() {
+    if (installPrompt) {
+      await installPrompt.prompt();
+      const choice = await installPrompt.userChoice;
+
+      if (choice?.outcome === "accepted") {
+        setInstallPrompt(null);
+      }
+
+      return;
+    }
+
+    if (window.matchMedia("(display-mode: standalone)").matches) {
+      alert("이미 홈 화면에서 앱으로 실행 중입니다.");
+      return;
+    }
+
+    const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+    if (isIOS) {
+      alert(
+        "Safari에서 사이트를 열고 공유 버튼을 누른 다음 '홈 화면에 추가'를 선택해 주세요."
+      );
+      return;
+    }
+
+    alert(
+      "브라우저 메뉴에서 '홈 화면에 추가' 또는 '앱 설치'를 선택해 주세요."
+    );
+  }
+  
     useEffect(() => {
     if (!("serviceWorker" in navigator)) {
       console.warn("이 브라우저는 서비스 워커를 지원하지 않습니다.");
@@ -992,10 +1044,23 @@ if (isMembersPage) {
   return (
     <main className="app">
       <header className="app-header">
-        <div className="brand">
-          <h1>헤르메스 3서버 보스타임</h1>
-          <p className="subtitle">길드 에르메스</p>
-        </div>
+<div className="brand">
+  <div className="brand-title-row">
+    <div className="brand-title-text">
+      <h1>헤르메스 3서버 보스타임</h1>
+      <p className="subtitle">길드 에르메스</p>
+    </div>
+
+    <button
+      type="button"
+      className="home-install-button"
+      onClick={handleAddToHomeScreen}
+    >
+      <span aria-hidden="true">＋</span>
+      홈 화면 추가
+    </button>
+  </div>
+</div>
   
 <div className="header-actions">
   <span className="developer-credit">개발자 : 쩜샷</span>
