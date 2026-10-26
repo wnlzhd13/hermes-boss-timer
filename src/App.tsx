@@ -594,23 +594,23 @@ if (!profileError && profile?.display_name) {
 useEffect(() => {
   if (!sessionChecked) return;
 
-    async function fetchBosses() {
-      const { data, error } = await supabase
-        .from("bosses")
-        .select("*");
+  async function fetchBosses() {
+    const { data, error } = await supabase
+      .from("bosses")
+      .select("*");
 
-      if (error) {
-        console.error("보스 목록 불러오기 실패:", error.message);
-        return;
-      }
-
-      if (data) {
-        setBosses(data.map((row) => bossFromDatabase(row)));
-      }
+    if (error) {
+      console.error("보스 목록 불러오기 실패:", error.message);
+      return;
     }
 
-    fetchBosses();
-  }, [sessionChecked, loggedIn, approved]);
+    if (data) {
+      setBosses(data.map((row) => bossFromDatabase(row)));
+    }
+  }
+
+  fetchBosses();
+}, [sessionChecked]);
 
   
   useEffect(() => {
