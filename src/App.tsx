@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { FormEvent } from "react";
 import "./App.css";
 import { supabase } from "./supabase";
@@ -334,6 +334,8 @@ function BossEditor({
 
 export default function App() {
   const [bosses, setBosses] = useState<Boss[]>(loadBosses);
+    const [alarmEnabled, setAlarmEnabled] = useState(false);
+  const notifiedBosses = useRef<Set<string>>(new Set());
   const [sessionChecked, setSessionChecked] = useState(false);
   const [loggedIn, setLoggedIn] = useState(false);
   const [now, setNow] = useState(Date.now());
@@ -513,6 +515,58 @@ const [membersError, setMembersError] = useState("");
     const timer = window.setInterval(() => setNow(Date.now()), 1000);
     return () => window.clearInterval(timer);
   }, []);
+
+    useEffect(() => {
+    if (!alarmEnabled) return;
+
+    const checkAlarm = () => {
+      const currentTime = Date.now();
+
+      bosses.forEach((boss) => {
+        const remaining = boss.nextSpawnAt - currentTime;
+        const notificationKey = `${boss.id}-${boss.nextSpawnAt}`;
+
+        if (
+          remaining > 0 &&
+          remaining <= FIVE_MINUTES &&
+          !notifiedBosses.current.has(notificationKey)
+        ) {
+          notifiedBosses.current.add(notificationKey);
+
+          if ("Notification" in window && Notification.permission === "granted") {
+            new Notification("보스 출현 5분 전!", {
+              body: `${boss.name} 보스가 곧 출현합니다.`,
+            });
+          }
+
+          try {
+            const audioContext = new AudioContext();
+            const oscillator = audioContext.createOscillator();
+            const gain = audioContext.createGain();
+
+            oscillator.connect(gain);
+            gain.connect(audioContext.destination);
+            oscillator.frequency.value = 880;
+            gain.gain.value = 0.2;
+
+            oscillator.start();
+            oscillator.stop(audioContext.currentTime + 0.6);
+            oscillator.onended = () => {
+              void audioContext.close();
+            };
+          } catch (error) {
+            console.error("알림음 재생 실패:", error);
+          }
+        }
+      });
+    };
+
+    checkAlarm();
+    const timer = window.setInterval(checkAlarm, 1000);
+
+    return () => window.clearInterval(timer);
+  }, [alarmEnabled, bosses]);
+
   useEffect(() => {
     if (!sessionChecked || !loggedIn || !approved) return;
 
@@ -876,6 +930,35 @@ if (isMembersPage) {
   
         <div className="header-actions">
           <span className="developer-credit">개발자 : 쩜샷</span>
+
+          <button
+  className="primary-button"
+  onClick={async () => {
+    if (!("Notification" in window)) {
+      alert("이 브라우저는 알림을 지원하지 않습니다.");
+      return;
+    }
+
+    if (Notification.permission === "denied") {
+      alert("브라우저 설정에서 사이트 알림을 허용해 주세요.");
+      return;
+    }
+
+    let permission = Notification.permission;
+
+    if (permission === "default") {
+      permission = await Notification.requestPermission();
+    }
+
+    if (permission === "granted") {
+      setAlarmEnabled((enabled) => !enabled);
+    } else {
+      alert("알림 권한을 허용해야 사용할 수 있습니다.");
+    }
+  }}
+>
+  {alarmEnabled ? "🔔 알림 ON" : "🔕 알림 OFF"}
+</button>
   
           {isAdmin && (
   <button
