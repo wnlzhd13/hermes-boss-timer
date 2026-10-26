@@ -1194,11 +1194,17 @@ if (permission === "default") {
 
           return (
             <div className="boss-item-wrap" key={boss.id}>
+
 <article
   className={`boss-card ${
     boss.id === nextBossId ? "next-boss" : ""
-  } spawn-imminent`}
+  } ${
+    remaining <= 5 * 60 * 1000
+      ? "spawn-imminent"
+      : ""
+  }`}
 >
+
                 <div className="boss-content">
                   <div className="boss-heading-row">
                     <span className="bell-icon" aria-label="알림">
