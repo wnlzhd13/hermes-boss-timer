@@ -47,9 +47,9 @@ function bossFromDatabase(row: any): Boss {
     grade: row.grade,
     location: row.location,
     type: row.boss_type,
-    firstSpawnAt: (row.first_spawn_at ?? row.flrst_spawn_at)
-    ? new Date(row.first_spawn_at ?? row.flrst_spawn_at).getTime()
-    : 0,
+    firstSpawnAt: row.first_spawn_at
+      ? new Date(row.first_spawn_at).getTime()
+      : 0,
     nextSpawnAt: row.next_spawn_at
       ? new Date(row.next_spawn_at).getTime()
       : 0,
@@ -885,245 +885,127 @@ const [membersError, setMembersError] = useState("");
     return <Auth onLogin={() => setLoggedIn(true)} />;
   }
 
-const isMembersPage =
-  new URLSearchParams(window.location.search).get("page") === "members";
+  const isMembersPage =
+    new URLSearchParams(window.location.search).get("page") === "members";
 
-if (isMembersPage) {
-  if (!loggedIn || !isAdmin) {
+  // 회원 관리 페이지
+  if (isMembersPage) {
+    // 관리자만 접근 가능
+    if (!isAdmin) {
+      return (
+        <main className="app">
+          <section className="admin-panel">
+            <h2>접근 권한이 없습니다.</h2>
+            <p>
+              회원 관리 페이지는 승인된 관리자만 이용할 수 있습니다.
+            </p>
+
+            <button
+              type="button"
+              className="primary-button"
+              onClick={() => {
+                window.location.href = window.location.pathname;
+              }}
+            >
+              보스 타임으로 돌아가기
+            </button>
+          </section>
+        </main>
+      );
+    }
+
+    // 관리자 회원 관리 화면
     return (
       <main className="app">
-        <p>관리자만 접근할 수 있습니다.</p>
-        <button
-          type="button"
-          className="primary-button"
-          onClick={() => {
-            window.location.href = window.location.pathname;
-          }}
-        >
-          보스 타임으로 돌아가기
-        </button>
+        <section className="admin-panel members-page">
+          <button
+            type="button"
+            className="primary-button"
+            onClick={() => {
+              window.location.href = window.location.pathname;
+            }}
+          >
+            ← 보스 타임으로 돌아가기
+          </button>
+
+          <div>
+            <h2>회원 관리</h2>
+            <p>회원 명단 및 승인 관리</p>
+          </div>
+
+          {membersLoading && (
+            <p>회원 목록을 불러오는 중입니다...</p>
+          )}
+
+          {membersError && (
+            <p className="form-error">{membersError}</p>
+          )}
+
+          {!membersLoading && !membersError && (
+            <div className="members-grid">
+              {members.length === 0 ? (
+                <p>등록된 회원이 없습니다.</p>
+              ) : (
+                members.map((member) => (
+                  <div
+                    key={member.id}
+                    className="member-card"
+                  >
+                    <p>
+                      이름: {member.display_name || "이름 없음"}
+                    </p>
+
+                    <p>
+                      권한:{" "}
+                      {member.role === "admin"
+                        ? "관리자"
+                        : "일반 회원"}
+                    </p>
+
+                    <p>
+                      승인 상태:{" "}
+                      {member.approved
+                        ? "승인됨"
+                        : "승인 대기"}
+                    </p>
+
+                    <button
+                      type="button"
+                      className="primary-button"
+                      onClick={() =>
+                        handleMemberApproval(member)
+                      }
+                    >
+                      {member.approved
+                        ? "승인 취소"
+                        : "회원 승인"}
+                    </button>
+
+                    <button
+                      type="button"
+                      className="primary-button"
+                      onClick={() =>
+                        handleMemberRoleChange(member)
+                      }
+                    >
+                      {member.role === "admin"
+                        ? "일반 회원으로 변경"
+                        : "관리자 등록"}
+                    </button>
+                  </div>
+                ))
+              )}
+            </div>
+          )}
+        </section>
       </main>
     );
   }
 
-  return (
-    <main className="app">
-      <section className="admin-panel members-page">
-        <button
-          type="button"
-          className="primary-button"
-          onClick={() => {
-            window.location.href = window.location.pathname;
-          }}
-        >
-          ← 보스 타임으로 돌아가기
-        </button>
-
-        <div>
-          <h2>회원 관리</h2>
-          <p>회원 명단 및 승인 관리</p>
-        </div>
-
-        {membersLoading && (
-          <p>회원 목록을 불러오는 중입니다...</p>
-        )}
-
-        {membersError && <p>{membersError}</p>}
-
-        {!membersLoading && !membersError && (
-          <div className="members-grid">
-            {members.length === 0 ? (
-              <p>등록된 회원이 없습니다.</p>
-            ) : (
-              members.map((member) => (
-                <div key={member.id} className="member-card">
-                  <p>
-                    이름: {member.display_name || "이름 없음"}
-                  </p>
-
-                  <p>
-                    권한:{" "}
-                    {member.role === "admin"
-                      ? "관리자"
-                      : "일반 회원"}
-                  </p>
-
-                  <p>
-                    승인 상태:{" "}
-                    {member.approved ? "승인됨" : "승인 대기"}
-                  </p>
-
-                  <button
-                    type="button"
-                    className="primary-button"
-                    onClick={() => handleMemberApproval(member)}
-                  >
-                    {member.approved ? "승인 취소" : "회원 승인"}
-                  </button>
-
-                  <button
-                    type="button"
-                    className="primary-button"
-                    onClick={() => handleMemberRoleChange(member)}
-                  >
-                    {member.role === "admin"
-                      ? "일반 회원으로 변경"
-                      : "관리자 등록"}
-                  </button>
-                </div>
-              ))
-            )}
-          </div>
-        )}
-      </section>
-    </main>
-  );
-}
-
-  return (
-    <main className="app">
-      <section className="admin-panel members-page">
-        <button
-          type="button"
-          className="primary-button"
-          onClick={() => {
-            window.location.href = window.location.pathname;
-          }}
-        >
-          ← 보스 타임으로 돌아가기
-        </button>
-
-        <div>
-          <h2>회원 관리</h2>
-          <p>회원 명단 및 승인 관리</p>
-        </div>
-
-        {membersLoading && <p>회원 목록을 불러오는 중입니다...</p>}
-        {membersError && <p>{membersError}</p>}
-
-        {!membersLoading && !membersError && (
-          <div className="members-grid">
-            {members.map((member) => (
-              <div key={member.id} className="member-card">
-                <p>이름: {member.display_name || "이름 없음"}</p>
-                <p>
-                  권한: {member.role === "admin" ? "관리자" : "일반 회원"}
-                </p>
-                <p>
-                  승인 상태: {member.approved ? "승인됨" : "승인 대기"}
-                </p>
-
-                <button
-                  type="button"
-                  className="primary-button"
-                  onClick={() => handleMemberApproval(member)}
-                >
-                  {member.approved ? "승인 취소" : "회원 승인"}
-                </button>
-
-                <button
-                  type="button"
-                  className="primary-button"
-                  onClick={() => handleMemberRoleChange(member)}
-                >
-                  {member.role === "admin"
-                    ? "일반 회원으로 변경"
-                    : "관리자 등록"}
-                </button>
-              </div>
-            ))}
-          </div>
-        )}
-      </section>
-    </main>
-  );
-}
-
-
-  if (!loggedIn || !isAdmin) {
-    return <main className="app">관리자만 접근할 수 있습니다.</main>;
-  }
-
-  return (
-    <main className="app">
-      <section className="admin-panel members-page">
-        <button
-  type="button"
-  className="primary-button"
-  onClick={() => {
-    window.location.href = window.location.pathname;
-  }}
->
-  ← 보스 타임으로 돌아가기
-</button>
-        <div>
-          <h2>회원 관리</h2>
-          <p>회원 명단 및 승인 관리</p>
-        </div>
-
-        {membersLoading && <p>회원 목록을 불러오는 중입니다...</p>}
-        {membersError && <p>{membersError}</p>}
-
-        {!membersLoading && !membersError && (
-          <div className="members-grid">
-            {members.map((member) => (
-              <div key={member.id} className="member-card">
-                <p>이름: {member.display_name || "이름 없음"}</p>
-                <p>
-                  권한: {member.role === "admin" ? "관리자" : "일반 회원"}
-                </p>
-                <p>
-                  승인 상태: {member.approved ? "승인됨" : "승인 대기"}
-                </p>
-
-                <button
-                  className="primary-button"
-                  onClick={() => handleMemberApproval(member)}
-                >
-                  {member.approved ? "승인 취소" : "회원 승인"}
-                </button>
-
-      
-          </div>
-        )}
-        
-              <button
-  className="primary-button"
-  onClick={() => handleMemberRoleChange(member)}
->
-  {member.role === "admin" ? "일반 회원으로 변경" : "관리자 등록"}
-</button>
-            </div>
-          ))}
-      </section>
-    </main>
-  );
-}
-  
+  // 여기부터 기존 보스 타임 메인 화면
   return (
     <main className="app">
       <header className="app-header">
-        <div className="brand">
-          <h1>헤르메스 3서버 보스타임</h1>
-          <p className="subtitle">길드 에르메스</p>
-        </div>
-  
-        <div className="header-actions">
-          <span className="developer-credit">개발자 : 쩜샷</span>
-
-          <button
-  className="primary-button"
-  onClick={async () => {
-    if (!("Notification" in window)) {
-      alert("이 브라우저는 알림을 지원하지 않습니다.");
-      return;
-    }
-
-    if (Notification.permission === "denied") {
-      alert("브라우저 설정에서 사이트 알림을 허용해 주세요.");
-      return;
-    }
-
 
 let permission: NotificationPermission = Notification.permission;
 
@@ -1422,7 +1304,7 @@ if (permission === "default") {
             ? "관리자 계정 · 보스 관리 권한"
             : "길드 에르메스 · 보스 출현 일정"}
         </p>
-        <p>현재 데이터는 이 브라우저에 저장됩니다.</p>
+      <p>보스 데이터는 서버와 연동되어 관리됩니다.</p>
       </footer>
 
     </main>
