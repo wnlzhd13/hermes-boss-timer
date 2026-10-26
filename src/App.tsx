@@ -885,7 +885,6 @@ const [membersError, setMembersError] = useState("");
     return <Auth onLogin={() => setLoggedIn(true)} />;
   }
 
-
 const isMembersPage =
   new URLSearchParams(window.location.search).get("page") === "members";
 
@@ -893,7 +892,16 @@ if (isMembersPage) {
   if (!loggedIn || !isAdmin) {
     return (
       <main className="app">
-        관리자만 접근할 수 있습니다.
+        <p>관리자만 접근할 수 있습니다.</p>
+        <button
+          type="button"
+          className="primary-button"
+          onClick={() => {
+            window.location.href = window.location.pathname;
+          }}
+        >
+          보스 타임으로 돌아가기
+        </button>
       </main>
     );
   }
@@ -971,7 +979,6 @@ if (isMembersPage) {
     </main>
   );
 }
-
 
   return (
     <main className="app">
