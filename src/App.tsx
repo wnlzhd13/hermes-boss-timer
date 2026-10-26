@@ -359,9 +359,10 @@ export default function App() {
       await installPrompt.prompt();
       const choice = await installPrompt.userChoice;
 
-      if (choice?.outcome === "accepted") {
-        setInstallPrompt(null);
-      }
+if (choice?.outcome === "accepted") {
+  alert("다운로드가 완료되었습니다.");
+  setInstallPrompt(null);
+}
 
       return;
     }
@@ -1057,7 +1058,7 @@ if (isMembersPage) {
       onClick={handleAddToHomeScreen}
     >
       <span aria-hidden="true">＋</span>
-      홈 화면 추가
+      어플 다운로드
     </button>
   </div>
 </div>
