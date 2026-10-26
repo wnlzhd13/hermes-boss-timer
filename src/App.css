@@ -1140,3 +1140,60 @@ select:focus-visible {
     animation: none;
   }
 }
+
+
+
+/* 출현 5분 전부터 출현 시각 경과까지 보스 카드 발광 */
+.boss-card.spawn-imminent {
+  border: 1px solid #ff304f;
+  border-left: 5px solid #ff304f;
+  background: linear-gradient(
+    100deg,
+    #302027 0%,
+    #262126 50%,
+    #262626 100%
+  );
+  box-shadow:
+    0 0 6px rgba(255, 48, 79, 0.75),
+    0 0 16px rgba(255, 48, 79, 0.4),
+    inset 0 0 12px rgba(255, 48, 79, 0.12);
+  animation: boss-imminent-glow 2s ease-in-out infinite alternate;
+}
+
+/* 출현 시간 빨간색 */
+.boss-card.spawn-imminent .spawn-time {
+  color: #ff5268;
+  text-shadow:
+    0 0 5px rgba(255, 48, 79, 0.8),
+    0 0 12px rgba(255, 48, 79, 0.45);
+}
+
+/* 보스 이름도 빨간색 */
+.boss-card.spawn-imminent .boss-name {
+  color: #ff5268;
+  text-shadow:
+    0 0 5px rgba(255, 48, 79, 0.8),
+    0 0 12px rgba(255, 48, 79, 0.45);
+}
+
+@keyframes boss-imminent-glow {
+  from {
+    box-shadow:
+      0 0 5px rgba(255, 48, 79, 0.45),
+      0 0 10px rgba(255, 48, 79, 0.2),
+      inset 0 0 8px rgba(255, 48, 79, 0.06);
+  }
+
+  to {
+    box-shadow:
+      0 0 8px rgba(255, 48, 79, 0.8),
+      0 0 20px rgba(255, 48, 79, 0.45),
+      inset 0 0 14px rgba(255, 48, 79, 0.14);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .boss-card.spawn-imminent {
+    animation: none;
+  }
+}
