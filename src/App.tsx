@@ -62,7 +62,7 @@ function bossFromDatabase(row: any): Boss {
 }
 
 const STORAGE_KEY = "hermes-boss-timer-v3";
-const FIVE_MINUTES = 5 * 60 * 1000;
+const FIVE_MINUTES = 3 * 60 * 1000;
 const WEEK_MS = 7 * 24 * 60 * 60 * 1000;
 
 function localDateTimeValue(timestamp: number): string {
@@ -353,6 +353,7 @@ export default function App() {
   const [bosses, setBosses] = useState<Boss[]>(loadBosses);
     const [alarmEnabled, setAlarmEnabled] = useState(false);
   const notifiedBosses = useRef<Set<string>>(new Set());
+  const autoCutProcessed = useRef<Set<string>>(new Set());
   const [sessionChecked, setSessionChecked] = useState(false);
   const [loggedIn, setLoggedIn] = useState(false);
   const [nickname, setNickname] = useState("");
@@ -883,6 +884,45 @@ if (!profileError && profile?.display_name) {
 
     setNow(cutTime);
   }
+
+    useEffect(() => {
+    if (!sessionChecked || !loggedIn || !approved || !isAdmin) {
+      return;
+    }
+
+    const checkAutoCut = () => {
+      const currentTime = Date.now();
+
+      bosses.forEach((boss) => {
+        const spawnTime = boss.nextSpawnAt;
+
+        // 출현 예정 시각으로부터 5분이 지났는지 확인
+        if (currentTime < spawnTime + FIVE_MINUTES) {
+          return;
+        }
+
+        // 같은 출현 일정의 중복 컷 방지
+        const key = `${boss.id}-${spawnTime}`;
+
+        if (autoCutProcessed.current.has(key)) {
+          return;
+        }
+
+        autoCutProcessed.current.add(key);
+
+        void recordCut(boss.id).catch((error) => {
+          console.error("자동 컷 처리 실패:", error);
+          autoCutProcessed.current.delete(key);
+        });
+      });
+    };
+
+    checkAutoCut();
+
+    const timer = window.setInterval(checkAutoCut, 1000);
+
+    return () => window.clearInterval(timer);
+  }, [sessionChecked, loggedIn, approved, isAdmin, bosses]);
 
   if (!sessionChecked) {
     return <p>로그인 상태 확인 중...</p>;
