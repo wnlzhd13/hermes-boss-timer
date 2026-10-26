@@ -654,7 +654,13 @@ const [membersError, setMembersError] = useState("");
   const visibleBosses = useMemo(
     () =>
       bosses
-        .filter((boss) => filter === "all" || boss.type === filter)
+        
+.filter((boss) =>
+  filter === "all"
+    ? boss.nextSpawnAt - now < 12 * 60 * 60 * 1000
+    : boss.type === filter
+)
+
         .sort((a, b) => a.nextSpawnAt - b.nextSpawnAt),
     [bosses, filter]
   );
