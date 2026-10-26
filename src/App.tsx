@@ -1070,12 +1070,18 @@ if (permission === "default") {
         + 보스 추가
       </button>
 
-      <button
-        className="primary-button"
-        onClick={() => setMemberManagementOpen(true)}
-      >
-        회원 관리
-      </button>
+<button
+  className="primary-button"
+  onClick={() => {
+    const membersUrl = new URL(window.location.href);
+    membersUrl.searchParams.set("page", "members");
+    window.open(membersUrl.toString(), "_blank");
+  }}
+>
+  회원 관리
+</button>
+
+      
     </section>
   )
 )}
