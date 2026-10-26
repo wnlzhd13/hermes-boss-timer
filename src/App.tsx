@@ -944,11 +944,13 @@ if (isMembersPage) {
       return;
     }
 
-    let permission = Notification.permission;
 
-    if (permission === "default") {
-      permission = await Notification.requestPermission();
-    }
+let permission: NotificationPermission = Notification.permission;
+
+if (permission === "default") {
+  permission = await Notification.requestPermission();
+}
+
 
     if (permission === "granted") {
       setAlarmEnabled((enabled) => !enabled);
