@@ -592,8 +592,8 @@ if (!profileError && profile?.display_name) {
     return () => window.clearInterval(timer);
   }, [alarmEnabled, bosses]);
 
-  useEffect(() => {
-    if (!sessionChecked || !loggedIn || !approved) return;
+useEffect(() => {
+  if (!sessionChecked) return;
 
     async function fetchBosses() {
       const { data, error } = await supabase
@@ -615,7 +615,7 @@ if (!profileError && profile?.display_name) {
 
   
   useEffect(() => {
-    if (!sessionChecked || !loggedIn || !approved) return;
+    if (!sessionChecked) return;
 
     const channel = supabase
       .channel("bosses-realtime")
@@ -924,13 +924,13 @@ if (!profileError && profile?.display_name) {
     return () => window.clearInterval(timer);
   }, [sessionChecked, loggedIn, approved, isAdmin, bosses]);
 
-  if (!sessionChecked) {
-    return <p>로그인 상태 확인 중...</p>;
-  }
+if (!sessionChecked) {
+  return <p>화면을 불러오는 중...</p>;
+}
 
-  if (!loggedIn) {
-    return <Auth onLogin={() => setLoggedIn(true)} />;
-  }
+if (!loggedIn && !sessionChecked) {
+  return <p>로그인 상태 확인 중...</p>;
+}
 
 const isMembersPage =
   new URLSearchParams(window.location.search).get("page") === "members";
