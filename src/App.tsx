@@ -355,6 +355,7 @@ export default function App() {
   const notifiedBosses = useRef<Set<string>>(new Set());
   const [sessionChecked, setSessionChecked] = useState(false);
   const [loggedIn, setLoggedIn] = useState(false);
+  const [nickname, setNickname] = useState("");
   const [now, setNow] = useState(Date.now());
   const [filter, setFilter] = useState<FilterType>("all");
   const [isAdmin, setIsAdmin] = useState(false);
@@ -476,19 +477,21 @@ const [membersError, setMembersError] = useState("");
 
       if (!active) return;
 
-      if (error || !data.session) {
-        setLoggedIn(false);
-        setIsAdmin(false);
-        setApproved(false);
-        setSessionChecked(true);
-        return;
-      }
+   if (error || !data.session) {
+  setLoggedIn(false);
+  setIsAdmin(false);
+  setApproved(false);
+  setNickname("");
+  setSessionChecked(true);
+  return;
+}
 
       setLoggedIn(true);
+      setNickname(data.session.user.email ?? "");
 
       const { data: profile, error: profileError } = await supabase
         .from("profiles")
-        .select("role, approved")
+        .select("role, approved, display_name")
         .eq("id", data.session.user.id)
         .single();
 
@@ -499,7 +502,11 @@ const [membersError, setMembersError] = useState("");
           profile?.role === "admin" &&
           profile?.approved === true
       );
-
+      
+if (!profileError && profile?.display_name) {
+  setNickname(profile.display_name);
+}
+    
       setApproved(!profileError && profile?.approved === true);
       setSessionChecked(true);
     }
@@ -951,9 +958,14 @@ if (isMembersPage) {
           <p className="subtitle">길드 에르메스</p>
         </div>
   
-        <div className="header-actions">
-          <span className="developer-credit">개발자 : 쩜샷</span>
+<div className="header-actions">
+  <span className="developer-credit">개발자 : 쩜샷</span>
 
+  {loggedIn && nickname && (
+    <span className="user-nickname">
+      로그인: {nickname}
+    </span>
+  )}
           <button
   className="primary-button"
   onClick={async () => {
