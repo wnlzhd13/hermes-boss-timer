@@ -2,7 +2,6 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import type { FormEvent } from "react";
 import "./App.css";
 import { supabase } from "./supabase";
-import Auth from "./Auth";
 
 
 type BossType = "daily" | "weekly";
