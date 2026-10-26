@@ -1235,7 +1235,7 @@ if (permission === "default") {
                       <span className="next-tag">NEXT</span>
                     )}
 
-                    <h2>{boss.name}</h2>
+                    <h2 className="boss-name">{boss.name}</h2>
                   </div>
 
                   <div className="boss-meta">
