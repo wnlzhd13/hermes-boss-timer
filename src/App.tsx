@@ -1264,7 +1264,7 @@ if (permission === "default") {
   className={`boss-card ${
     boss.id === nextBossId ? "next-boss" : ""
   } ${
-    remaining <= 5 * 60 * 1000
+    remaining <= 10 * 60 * 1000
       ? "spawn-imminent"
       : ""
   }`}
