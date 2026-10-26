@@ -1060,6 +1060,28 @@ select:focus-visible {
   align-items: stretch;
 }
 
+/* 회원 카드를 한 줄에 두 명씩 배치 */
+.members-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  width: 100%;
+  align-items: stretch;
+}
+
+.members-grid .member-card {
+  margin-top: 0;
+  min-width: 0;
+  width: 100%;
+}
+
+/* 휴대폰에서는 한 명씩 표시 */
+@media (max-width: 650px) {
+  .members-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
 .members-page .member-card {
   display: flex;
   flex-wrap: wrap;
