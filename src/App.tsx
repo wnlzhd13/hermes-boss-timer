@@ -657,7 +657,7 @@ const [membersError, setMembersError] = useState("");
         
 .filter((boss) =>
   filter === "all"
-    ? boss.nextSpawnAt - now < 12 * 60 * 60 * 1000
+    ? boss.nextSpawnAt - now < 24 * 60 * 60 * 1000
     : boss.type === filter
 )
 
