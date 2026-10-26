@@ -1110,3 +1110,91 @@ select:focus-visible {
 .members-page .member-card .primary-button {
   margin-top: 4px;
 }
+
+
+/* 회원 관리 화면 개선 */
+.members-page {
+  align-items: stretch;
+  min-width: 0;
+}
+
+.members-page > .primary-button {
+  align-self: flex-start;
+  max-width: 100%;
+  white-space: normal;
+}
+
+.members-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.members-page .member-card {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 10px;
+  min-width: 0;
+}
+
+.members-page .member-card p {
+  overflow-wrap: anywhere;
+}
+
+.members-page .member-card .primary-button {
+  width: 100%;
+  min-height: 40px;
+  margin-top: 0;
+  white-space: normal;
+}
+
+/* 보스 카드의 가로 넘침 방지 */
+.boss-card,
+.boss-content,
+.boss-heading-row {
+  min-width: 0;
+}
+
+.boss-heading-row h2 {
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 650px) {
+  .members-page {
+    padding: 18px 12px;
+    gap: 14px;
+  }
+
+  .members-page h2 {
+    font-size: 22px;
+  }
+
+  .members-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .members-page .member-card {
+    padding: 15px;
+  }
+
+  .boss-heading-row {
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 390px) {
+  .app-header {
+    align-items: flex-start;
+  }
+
+  .header-actions {
+    max-width: 45%;
+  }
+
+  .boss-heading-row {
+    gap: 5px;
+  }
+
+  .spawn-time {
+    font-size: 19px;
+  }
+}
