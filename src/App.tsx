@@ -333,6 +333,23 @@ function BossEditor({
 
 
 export default function App() {
+
+    useEffect(() => {
+    if (!("serviceWorker" in navigator)) {
+      console.warn("이 브라우저는 서비스 워커를 지원하지 않습니다.");
+      return;
+    }
+
+    navigator.serviceWorker
+      .register("/sw.js")
+      .then(() => {
+        console.log("푸시 알림 서비스 워커 등록 완료");
+      })
+      .catch((error) => {
+        console.error("서비스 워커 등록 실패:", error);
+      });
+  }, []);
+  
   const [bosses, setBosses] = useState<Boss[]>(loadBosses);
     const [alarmEnabled, setAlarmEnabled] = useState(false);
   const notifiedBosses = useRef<Set<string>>(new Set());
