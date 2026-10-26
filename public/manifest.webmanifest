@@ -1,0 +1,11 @@
+{
+  "name": "헤르메스 3서버 보스타임",
+  "short_name": "헤르메스 보스",
+  "description": "길드 에르메스 보스 출현 시간 확인 및 알림",
+  "lang": "ko",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#101827",
+  "theme_color": "#101827"
+}
