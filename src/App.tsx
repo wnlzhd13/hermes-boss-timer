@@ -354,37 +354,31 @@ export default function App() {
     };
   }, []);
 
-  async function handleAddToHomeScreen() {
-    if (installPrompt) {
-      await installPrompt.prompt();
-      const choice = await installPrompt.userChoice;
 
-if (choice?.outcome === "accepted") {
-  alert("다운로드가 완료되었습니다.");
-  setInstallPrompt(null);
+async function handleAddToHomeScreen() {
+  if (installPrompt) {
+    await installPrompt.prompt();
+    const choice = await installPrompt.userChoice;
+
+    if (choice?.outcome === "accepted") {
+      alert("앱 설치가 시작되었습니다.");
+      setInstallPrompt(null);
+    }
+
+    return;
+  }
+
+  if (window.matchMedia("(display-mode: standalone)").matches) {
+    alert("이미 앱이 설치되어 있습니다.");
+    return;
+  }
+
+  alert(
+    "현재 브라우저에서 바로 설치할 수 없습니다. " +
+    "안드로이드에서는 Chrome으로 앱 사이트를 열어 다시 시도해 주세요."
+  );
 }
 
-      return;
-    }
-
-    if (window.matchMedia("(display-mode: standalone)").matches) {
-      alert("이미 홈 화면에서 앱으로 실행 중입니다.");
-      return;
-    }
-
-    const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
-
-    if (isIOS) {
-      alert(
-        "Safari에서 사이트를 열고 공유 버튼을 누른 다음 '홈 화면에 추가'를 선택해 주세요."
-      );
-      return;
-    }
-
-    alert(
-      "브라우저 메뉴에서 '홈 화면에 추가' 또는 '앱 설치'를 선택해 주세요."
-    );
-  }
   
     useEffect(() => {
     if (!("serviceWorker" in navigator)) {
@@ -1058,7 +1052,7 @@ if (isMembersPage) {
       onClick={handleAddToHomeScreen}
     >
       <span aria-hidden="true">＋</span>
-      어플 다운로드
+      어플 설치
     </button>
   </div>
 </div>
