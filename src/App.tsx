@@ -62,7 +62,7 @@ function bossFromDatabase(row: any): Boss {
 }
 
 const STORAGE_KEY = "hermes-boss-timer-v3";
-const FIVE_MINUTES = 3 * 60 * 1000;
+const FIVE_MINUTES = 5 * 60 * 1000;
 const WEEK_MS = 7 * 24 * 60 * 60 * 1000;
 
 function localDateTimeValue(timestamp: number): string {
@@ -1194,11 +1194,11 @@ if (permission === "default") {
 
           return (
             <div className="boss-item-wrap" key={boss.id}>
-              <article
-                className={`boss-card ${
-                  boss.id === nextBossId ? "next-boss" : ""
-                }`}
-              >
+<article
+  className={`boss-card ${
+    boss.id === nextBossId ? "next-boss" : ""
+  } spawn-imminent`}
+>
                 <div className="boss-content">
                   <div className="boss-heading-row">
                     <span className="bell-icon" aria-label="알림">
