@@ -917,19 +917,38 @@ if (isMembersPage) {
         {membersLoading && <p>회원 목록을 불러오는 중입니다...</p>}
         {membersError && <p>{membersError}</p>}
 
-        {!membersLoading && !membersError &&
-          members.map((member) => (
-           <div key={member.id} className="member-card">
-              <p>이름: {member.display_name || "이름 없음"}</p>
-              <p>권한: {member.role === "admin" ? "관리자" : "일반 회원"}</p>
-              <p>승인 상태: {member.approved ? "승인됨" : "승인 대기"}</p>
+        {!membersLoading && !membersError && (
+          <div className="members-grid">
+            {members.map((member) => (
+              <div key={member.id} className="member-card">
+                <p>이름: {member.display_name || "이름 없음"}</p>
+                <p>
+                  권한: {member.role === "admin" ? "관리자" : "일반 회원"}
+                </p>
+                <p>
+                  승인 상태: {member.approved ? "승인됨" : "승인 대기"}
+                </p>
 
-              <button
-                className="primary-button"
-                onClick={() => handleMemberApproval(member)}
-              >
-                {member.approved ? "승인 취소" : "회원 승인"}
-              </button>
+                <button
+                  className="primary-button"
+                  onClick={() => handleMemberApproval(member)}
+                >
+                  {member.approved ? "승인 취소" : "회원 승인"}
+                </button>
+
+                <button
+                  className="primary-button"
+                  onClick={() => handleMemberRoleChange(member)}
+                >
+                  {member.role === "admin"
+                    ? "일반 회원으로 변경"
+                    : "관리자 등록"}
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+        
               <button
   className="primary-button"
   onClick={() => handleMemberRoleChange(member)}
