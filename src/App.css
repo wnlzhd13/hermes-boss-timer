@@ -1160,7 +1160,7 @@ select:focus-visible {
   animation: boss-imminent-glow 2s ease-in-out infinite alternate;
 }
 
-/* 출현 시간 빨간색 */
+/* 출현 시간 빨간색 발광 */
 .boss-card.spawn-imminent .spawn-time {
   color: #ff5268;
   text-shadow:
@@ -1168,7 +1168,7 @@ select:focus-visible {
     0 0 12px rgba(255, 48, 79, 0.45);
 }
 
-/* 보스 이름도 빨간색 */
+/* 보스 이름 빨간색 발광 */
 .boss-card.spawn-imminent .boss-name {
   color: #ff5268;
   text-shadow:
@@ -1176,6 +1176,7 @@ select:focus-visible {
     0 0 12px rgba(255, 48, 79, 0.45);
 }
 
+/* 보스 카드 발광 애니메이션 */
 @keyframes boss-imminent-glow {
   from {
     box-shadow:
@@ -1192,6 +1193,7 @@ select:focus-visible {
   }
 }
 
+/* 움직임 최소화 설정을 사용하는 경우 애니메이션 비활성화 */
 @media (prefers-reduced-motion: reduce) {
   .boss-card.spawn-imminent {
     animation: none;
