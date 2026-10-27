@@ -62,6 +62,7 @@ function bossFromDatabase(row: any): Boss {
 
 const STORAGE_KEY = "hermes-boss-timer-v3";
 const FIVE_MINUTES = 10 * 60 * 1000;
+const THREE_MINUTES = 3 * 60 * 1000;
 const WEEK_MS = 7 * 24 * 60 * 60 * 1000;
 
 function localDateTimeValue(timestamp: number): string {
@@ -942,10 +943,10 @@ useEffect(() => {
       bosses.forEach((boss) => {
         const spawnTime = boss.nextSpawnAt;
 
-        // 출현 예정 시각으로부터 5분이 지났는지 확인
-        if (currentTime < spawnTime + FIVE_MINUTES) {
-          return;
-        }
+// 출현 예정 시각으로부터 3분이 지났는지 확인
+if (currentTime < spawnTime + THREE_MINUTES) {
+  return;
+}
 
         // 같은 출현 일정의 중복 컷 방지
         const key = `${boss.id}-${spawnTime}`;
