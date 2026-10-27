@@ -605,11 +605,28 @@ if (!profileError && profile?.display_name) {
         ) {
           notifiedBosses.current.add(notificationKey);
 
-          if ("Notification" in window && Notification.permission === "granted") {
-            new Notification("보스 출현 5분 전!", {
-              body: `${boss.name} 보스가 곧 출현합니다.`,
-            });
-          }
+if (
+  "Notification" in window &&
+  Notification.permission === "granted"
+) {
+  try {
+    const notification = new Notification(
+      `${boss.name} 출현 5분 전!`,
+      {
+        body: `${boss.name} 보스가 곧 출현합니다.`,
+        icon: "/icon-192.png",
+        tag: notificationKey,
+      }
+    );
+
+    notification.onclick = () => {
+      window.focus();
+      notification.close();
+    };
+  } catch (error) {
+    console.error("보스 알림 표시 실패:", error);
+  }
+}
 
           try {
             const audioContext = new AudioContext();
