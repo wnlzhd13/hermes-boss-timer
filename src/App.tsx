@@ -61,7 +61,7 @@ function bossFromDatabase(row: any): Boss {
 }
 
 const STORAGE_KEY = "hermes-boss-timer-v3";
-const FIVE_MINUTES = 10 * 60 * 1000;
+const FIVE_MINUTES = 5 * 60 * 1000;
 const THREE_MINUTES = 1 * 60 * 1000;
 const WEEK_MS = 7 * 24 * 60 * 60 * 1000;
 
