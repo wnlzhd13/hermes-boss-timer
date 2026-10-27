@@ -1,11 +1,25 @@
+
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { FormEvent } from "react";
 import "./App.css";
 import { supabase } from "./supabase";
 
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker
+      .register("/sw.js")
+      .then((registration) => {
+        console.log("서비스 워커 등록 완료", registration);
+      })
+      .catch((error) => {
+        console.error("서비스 워커 등록 실패", error);
+      });
+  });
+}
 
 type BossType = "daily" | "weekly";
 type FilterType = "all" | BossType;
+
 
 type Member = {
   id: string;
