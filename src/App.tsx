@@ -1066,9 +1066,12 @@ if (isMembersPage) {
       로그인: {nickname}
     </span>
   )}
-          <button
+
+  
+<button
+  type="button"
   className="primary-button"
-  onClick={async () => {
+  onClick={() => {
     if (!("Notification" in window)) {
       alert("이 브라우저는 알림을 지원하지 않습니다.");
       return;
@@ -1079,23 +1082,39 @@ if (isMembersPage) {
       return;
     }
 
+    const toggleAlarm = () => {
+      setAlarmEnabled((enabled) => {
+        const next = !enabled;
+        localStorage.setItem(
+          "hermes-alarm-enabled",
+          String(next)
+        );
+        return next;
+      });
+    };
 
-let permission: NotificationPermission = Notification.permission;
+    if (Notification.permission === "default") {
+      void Notification.requestPermission()
+        .then((permission) => {
+          if (permission === "granted") {
+            toggleAlarm();
+          } else {
+            alert("브라우저 설정에서 알림을 허용해 주세요.");
+          }
+        })
+        .catch(() => {
+          alert("알림 권한 요청에 실패했습니다. 브라우저 설정을 확인해 주세요.");
+        });
 
-if (permission === "default") {
-  permission = await Notification.requestPermission();
-}
-
-
-    if (permission === "granted") {
-      setAlarmEnabled((enabled) => !enabled);
-    } else {
-      alert("알림 권한을 허용해야 사용할 수 있습니다.");
+      return;
     }
+
+    toggleAlarm();
   }}
 >
   {alarmEnabled ? "🔔 알림 ON" : "🔕 알림 OFF"}
 </button>
+
   
           {isAdmin && (
   <button
