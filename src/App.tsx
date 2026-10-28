@@ -1217,11 +1217,6 @@ if (existingSubscription) {
     .from("push_subscriptions")
     .insert(subscriptionData);
 
-  if (insertError) {
-    throw insertError;
-  }
-}
-
 
 onClick={async () => {
   if (alarmEnabled) {
