@@ -1194,11 +1194,14 @@ if (lookupError) {
 }
 
 
+
 const subscriptionData = {
   user_id: currentUser?.id ?? null,
   endpoint: subscription.endpoint,
   subscription: subscription.toJSON(),
+  user_agent: navigator.userAgent,
 };
+
 
 if (existingSubscription) {
   const { error: updateError } = await supabase
