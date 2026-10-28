@@ -1036,14 +1036,7 @@ if (isMembersPage) {
   return (
     <main className="app">
       <header className="app-header">
-<div className="brand">
-  <div className="brand-title-row">
-    <div className="brand-title-text">
-      <h1>헤르메스 3서버 보스타임</h1>
-      <p className="subtitle">길드 에르메스</p>
-    </div>
-  </div>
-</div>
+
 
 <div className="header-actions">
 
