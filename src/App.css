@@ -1330,3 +1330,11 @@ select:focus-visible {
     font-size: 9px;
   }
 }
+
+.app-header {
+  justify-content: flex-end;
+}
+
+.header-actions {
+  margin-left: auto;
+}
