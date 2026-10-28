@@ -1055,7 +1055,8 @@ if (isMembersPage) {
       <h1>헤르메스 3서버 보스타임</h1>
       <p className="subtitle">길드 에르메스</p>
     </div>
-
+  </div>
+</div>
 
 <div className="header-actions">
   <span className="developer-credit">개발자 : 쩜샷</span>
