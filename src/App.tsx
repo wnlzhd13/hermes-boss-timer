@@ -366,51 +366,8 @@ function BossEditor({
 
 export default function App() {
 
-  const [installPrompt, setInstallPrompt] = useState<any>(null);
-
-  useEffect(() => {
-    const handleBeforeInstallPrompt = (event: Event) => {
-      event.preventDefault();
-      setInstallPrompt(event);
-    };
-
-    window.addEventListener(
-      "beforeinstallprompt",
-      handleBeforeInstallPrompt
-    );
-
-    return () => {
-      window.removeEventListener(
-        "beforeinstallprompt",
-        handleBeforeInstallPrompt
-      );
-    };
-  }, []);
 
 
-async function handleAddToHomeScreen() {
-  if (installPrompt) {
-    await installPrompt.prompt();
-    const choice = await installPrompt.userChoice;
-
-    if (choice?.outcome === "accepted") {
-      alert("앱 설치가 시작되었습니다.");
-      setInstallPrompt(null);
-    }
-
-    return;
-  }
-
-  if (window.matchMedia("(display-mode: standalone)").matches) {
-    alert("이미 앱이 설치되어 있습니다.");
-    return;
-  }
-
-  alert(
-    "현재 브라우저에서 바로 설치할 수 없습니다. " +
-    "안드로이드에서는 Chrome으로 앱 사이트를 열어 다시 시도해 주세요."
-  );
-}
 
   
     useEffect(() => {
@@ -1099,17 +1056,6 @@ if (isMembersPage) {
       <p className="subtitle">길드 에르메스</p>
     </div>
 
-    <button
-      type="button"
-      className="home-install-button"
-      onClick={handleAddToHomeScreen}
-    >
-      <span aria-hidden="true">＋</span>
-      어플 설치
-    </button>
-  </div>
-</div>
-  
 
 <div className="header-actions">
   <span className="developer-credit">개발자 : 쩜샷</span>
