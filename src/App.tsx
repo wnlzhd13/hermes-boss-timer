@@ -1207,12 +1207,12 @@ if (!existingSubscription) {
     } catch (error) {
       console.error("푸시 알림 설정 오류:", error);
 
-      alert(
-        "푸시 알림 설정에 실패했습니다.\n" +
-          (error instanceof Error
-            ? error.message
-            : "설정을 확인해 주세요.")
-      );
+alert(
+  "푸시 알림 설정 실패\n" +
+    (error instanceof Error
+      ? error.message
+      : JSON.stringify(error))
+);
     }
   }}
 >
