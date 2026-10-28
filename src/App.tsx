@@ -425,7 +425,7 @@ async function handleAddToHomeScreen() {
   }, []);
   
   const [bosses, setBosses] = useState<Boss[]>(loadBosses);
-  const [alarmEnabled, setAlarmEnabled] = useState(true);
+  const [alarmEnabled, setAlarmEnabled] = useState(false);
   const notifiedBosses = useRef<Set<string>>(new Set());
   const autoCutProcessed = useRef<Set<string>>(new Set());
   const [sessionChecked, setSessionChecked] = useState(false);
