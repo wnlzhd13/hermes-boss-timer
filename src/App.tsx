@@ -1173,19 +1173,24 @@ if (isMembersPage) {
         });
       }
 
+
 const { error } = await supabase
   .from("push_subscriptions")
-  .insert({
-    user_id: null,
-    endpoint: subscription.endpoint,
-    subscription: subscription.toJSON(),
-  });
+  .upsert(
+    {
+      user_id: null,
+      endpoint: subscription.endpoint,
+      subscription: subscription.toJSON(),
+    },
+    { onConflict: "endpoint" }
+  );
 
 if (error) {
   console.error("구독 저장 실패:", error);
   alert("구독 저장 실패: " + error.message);
   return;
 }
+
 
       setAlarmEnabled(true);
       localStorage.setItem("hermes-alarm-enabled", "true");
