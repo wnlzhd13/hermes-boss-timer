@@ -1217,14 +1217,7 @@ select:focus-visible {
   border: 1px solid rgba(210, 170, 88, 0.55);
   border-radius: 14px;
 
-  background:
-    linear-gradient(
-      90deg,
-      rgba(5, 10, 21, 0.82) 0%,
-      rgba(7, 13, 25, 0.45) 55%,
-      rgba(8, 13, 25, 0.18) 100%
-    ),
-    url("/zeus-header.png.png") center 35% / cover no-repeat;
+ background: url("/zeus-header.png.png") center 35% / cover no-repeat;
 
   box-shadow:
     0 8px 24px rgba(0, 0, 0, 0.4),
