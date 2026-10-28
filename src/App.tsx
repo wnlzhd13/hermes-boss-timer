@@ -1312,6 +1312,107 @@ const subscriptionData = {
       setAlarmEnabled(true);
       localStorage.setItem("hermes-alarm-enabled", "true");
 
+<button
+  type="button"
+  className="primary-button"
+  onClick={async () => {
+    if (alarmEnabled) {
+      setAlarmEnabled(false);
+      localStorage.setItem("hermes-alarm-enabled", "false");
+      return;
+    }
+
+    try {
+      if (!("serviceWorker" in navigator) || !("PushManager" in window)) {
+        alert("이 브라우저는 푸시 알림을 지원하지 않습니다.");
+        return;
+      }
+
+      if (!("Notification" in window)) {
+        alert("이 브라우저는 알림을 지원하지 않습니다.");
+        return;
+      }
+
+      if (!VAPID_PUBLIC_KEY) {
+        alert("VAPID 공개키 설정을 확인해 주세요.");
+        return;
+      }
+
+      if (Notification.permission === "denied") {
+        alert("브라우저 설정에서 사이트 알림을 허용해 주세요.");
+        return;
+      }
+
+      const permission =
+        Notification.permission === "granted"
+          ? "granted"
+          : await Notification.requestPermission();
+
+      if (permission !== "granted") {
+        alert("알림 권한이 허용되지 않았습니다.");
+        return;
+      }
+
+      const registration = await navigator.serviceWorker.ready;
+
+      let subscription =
+        await registration.pushManager.getSubscription();
+
+      if (!subscription) {
+        subscription = await registration.pushManager.subscribe({
+          userVisibleOnly: true,
+          applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY),
+        });
+      }
+
+      const {
+        data: { user: currentUser },
+        error: authError,
+      } = await supabase.auth.getUser();
+
+      if (authError) throw authError;
+
+      const subscriptionData = {
+        user_id: currentUser?.id ?? null,
+        endpoint: subscription.endpoint,
+        subscription: subscription.toJSON(),
+        user_agent: navigator.userAgent,
+      };
+
+      const { data: existingSubscription, error: lookupError } =
+        await supabase
+          .from("push_subscriptions")
+          .select("id")
+          .eq("endpoint", subscription.endpoint)
+          .maybeSingle();
+
+      if (lookupError) throw lookupError;
+
+      if (existingSubscription) {
+        const { error: updateError } = await supabase
+          .from("push_subscriptions")
+          .update(subscriptionData)
+          .eq("id", existingSubscription.id);
+
+        if (updateError) throw updateError;
+      } else {
+        const { error: insertError } = await supabase
+          .from("push_subscriptions")
+          .insert(subscriptionData);
+
+        if (insertError) throw insertError;
+      }
+
+      await registration.showNotification("보스타임 알림 테스트", {
+        body: "휴대폰 알림 표시 테스트입니다.",
+        icon: "/icon-192.png",
+        tag: "push-setup-test",
+        data: { url: "/" },
+      });
+
+      setAlarmEnabled(true);
+      localStorage.setItem("hermes-alarm-enabled", "true");
+
       alert(
         "푸시 구독 등록을 완료했습니다.\n" +
           "휴대폰에 테스트 알림이 표시되는지 확인해 주세요."
@@ -1331,7 +1432,7 @@ const subscriptionData = {
   {alarmEnabled ? "🔔 알림 ON" : "🔕 알림 OFF"}
 </button>
 
-          {isAdmin && (
+{isAdmin && (
   <button
     className={`admin-toggle ${adminMode ? "active" : ""}`}
     onClick={() => {
@@ -1342,13 +1443,12 @@ const subscriptionData = {
     {adminMode ? "관리자 모드 ON" : "관리자 모드 OFF"}
   </button>
 )}
-        </div>
-      </header>
-  
+</div>
+</header>
 
 {isAdmin && adminMode && (
   memberManagementOpen ? (
-   <section className="admin-panel members-page">
+    <section className="admin-panel members-page">
       <div>
         <h2>회원 관리</h2>
         <p>회원 목록 및 승인 상태 관리</p>
@@ -1390,12 +1490,28 @@ const subscriptionData = {
                 >
                   {member.approved ? "승인 취소" : "회원 승인"}
                 </button>
+
                 <button
-  className="primary-button"
-  onClick={() => handleMemberRoleChange(member)}
->
-  {member.role === "admin" ? "일반 회원으로 변경" : "관리자 등록"}
-</button>
+                  className="primary-button"
+                  onClick={() => handleMemberRoleChange(member)}
+                >
+                  {member.role === "admin"
+                    ? "일반 회원으로 변경"
+                    : "관리자 등록"}
+                </button>
+              </div>
+            ))
+          )}
+        </div>
+      )}
+    </section>
+  ) : (
+    <section className="admin-panel">
+      {/* 기존 관리자 화면 내용을 이 위치에 유지해야 합니다. */}
+    </section>
+  )
+)}
+      
               </div>
             ))
           )}
