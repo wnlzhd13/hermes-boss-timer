@@ -1173,7 +1173,7 @@ if (isMembersPage) {
         });
       }
 
-
+console.log("현재 Supabase 사용자:", await supabase.auth.getUser());
 const { data: existingSubscription, error: lookupError } =
   await supabase
     .from("push_subscriptions")
