@@ -1160,8 +1160,6 @@ if (isMembersPage) {
         return;
       }
 
-const userData = { user: null };
-
       const registration = await navigator.serviceWorker.ready;
 
       let subscription =
