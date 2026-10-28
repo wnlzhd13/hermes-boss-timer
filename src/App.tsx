@@ -1194,21 +1194,32 @@ if (lookupError) {
   return;
 }
 
-if (!existingSubscription) {
-  const { error: insertError } = await supabase
-    .from("push_subscriptions")
-.insert({
+
+const subscriptionData = {
   user_id: currentUser?.id ?? null,
   endpoint: subscription.endpoint,
   subscription: subscription.toJSON(),
-});
+};
 
-if (insertError) {
-  console.error("구독 등록 실패:", insertError);
-  alert("구독 등록 실패: " + insertError.message);
-  return;
+if (existingSubscription) {
+  const { error: updateError } = await supabase
+    .from("push_subscriptions")
+    .update(subscriptionData)
+    .eq("id", existingSubscription.id);
+
+  if (updateError) {
+    throw updateError;
+  }
+} else {
+  const { error: insertError } = await supabase
+    .from("push_subscriptions")
+    .insert(subscriptionData);
+
+  if (insertError) {
+    throw insertError;
+  }
 }
-}
+
 
 
       setAlarmEnabled(true);
