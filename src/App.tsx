@@ -1182,7 +1182,9 @@ const { data: existingSubscription, error: lookupError } =
     .maybeSingle();
 
 if (lookupError) {
-  throw lookupError;
+  console.error("구독 조회 실패:", lookupError);
+  alert("구독 조회 실패: " + lookupError.message);
+  return;
 }
 
 if (!existingSubscription) {
@@ -1194,9 +1196,11 @@ if (!existingSubscription) {
       subscription: subscription.toJSON(),
     });
 
-  if (insertError) {
-    throw insertError;
-  }
+if (insertError) {
+  console.error("구독 등록 실패:", insertError);
+  alert("구독 등록 실패: " + insertError.message);
+  return;
+}
 }
 
 
