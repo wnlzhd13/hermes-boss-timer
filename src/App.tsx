@@ -4,6 +4,19 @@ import type { FormEvent } from "react";
 import "./App.css";
 import { supabase } from "./supabase";
 
+const VAPID_PUBLIC_KEY = import.meta.env.VITE_VAPID_PUBLIC_KEY as string;
+
+function urlBase64ToUint8Array(base64String: string): Uint8Array {
+  const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
+  const base64 = (base64String + padding)
+    .replace(/-/g, "+")
+    .replace(/_/g, "/");
+
+  const rawData = window.atob(base64);
+
+  return Uint8Array.from(rawData, (char) => char.charCodeAt(0));
+}
+
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
     navigator.serviceWorker
@@ -1103,45 +1116,94 @@ if (isMembersPage) {
 <button
   type="button"
   className="primary-button"
-  onClick={() => {
-    if (!("Notification" in window)) {
-      alert("이 브라우저는 알림을 지원하지 않습니다.");
+  onClick={async () => {
+    if (alarmEnabled) {
+      setAlarmEnabled(false);
+      localStorage.setItem("hermes-alarm-enabled", "false");
       return;
     }
 
-    if (Notification.permission === "denied") {
-      alert("브라우저 설정에서 사이트 알림을 허용해 주세요.");
-      return;
-    }
+    try {
+      if (!("serviceWorker" in navigator) || !("PushManager" in window)) {
+        alert("이 브라우저는 푸시 알림을 지원하지 않습니다.");
+        return;
+      }
 
-    const toggleAlarm = () => {
-      setAlarmEnabled((enabled) => {
-        const next = !enabled;
-        localStorage.setItem(
-          "hermes-alarm-enabled",
-          String(next)
-        );
-        return next;
-      });
-    };
+      if (!("Notification" in window)) {
+        alert("이 브라우저는 알림을 지원하지 않습니다.");
+        return;
+      }
 
-    if (Notification.permission === "default") {
-      void Notification.requestPermission()
-        .then((permission) => {
-          if (permission === "granted") {
-            toggleAlarm();
-          } else {
-            alert("브라우저 설정에서 알림을 허용해 주세요.");
-          }
-        })
-        .catch(() => {
-          alert("알림 권한 요청에 실패했습니다. 브라우저 설정을 확인해 주세요.");
+      if (!VAPID_PUBLIC_KEY) {
+        alert("VAPID 공개키 설정을 확인해 주세요.");
+        return;
+      }
+
+      if (Notification.permission === "denied") {
+        alert("브라우저 설정에서 사이트 알림을 허용해 주세요.");
+        return;
+      }
+
+      const permission =
+        Notification.permission === "granted"
+          ? "granted"
+          : await Notification.requestPermission();
+
+      if (permission !== "granted") {
+        alert("브라우저 설정에서 알림을 허용해 주세요.");
+        return;
+      }
+
+      const { data: userData, error: userError } =
+        await supabase.auth.getUser();
+
+      if (userError || !userData.user) {
+        alert("로그인 후 알림을 설정해 주세요.");
+        return;
+      }
+
+      const registration = await navigator.serviceWorker.ready;
+
+      let subscription =
+        await registration.pushManager.getSubscription();
+
+      if (!subscription) {
+        subscription = await registration.pushManager.subscribe({
+          userVisibleOnly: true,
+          applicationServerKey:
+            urlBase64ToUint8Array(VAPID_PUBLIC_KEY),
         });
+      }
 
-      return;
+      const { error } = await supabase
+        .from("push_subscriptions")
+        .upsert(
+          {
+            user_id: userData.user.id,
+            endpoint: subscription.endpoint,
+            subscription: subscription.toJSON(),
+          },
+          { onConflict: "endpoint" }
+        );
+
+      if (error) {
+        throw error;
+      }
+
+      setAlarmEnabled(true);
+      localStorage.setItem("hermes-alarm-enabled", "true");
+
+      alert("푸시 알림 설정이 완료되었습니다.");
+    } catch (error) {
+      console.error("푸시 알림 설정 오류:", error);
+
+      alert(
+        "푸시 알림 설정에 실패했습니다.\n" +
+          (error instanceof Error
+            ? error.message
+            : "설정을 확인해 주세요.")
+      );
     }
-
-    toggleAlarm();
   }}
 >
   {alarmEnabled ? "🔔 알림 ON" : "🔕 알림 OFF"}
