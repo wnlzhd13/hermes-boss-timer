@@ -1059,7 +1059,6 @@ if (isMembersPage) {
 </div>
 
 <div className="header-actions">
-  <span className="developer-credit">개발자 : 쩜샷</span>
 
   {loggedIn && nickname && (
     <span className="user-nickname">
