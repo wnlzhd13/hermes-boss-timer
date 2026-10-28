@@ -1173,7 +1173,12 @@ if (isMembersPage) {
         });
       }
 
-console.log("현재 Supabase 사용자:", await supabase.auth.getUser());
+const { data: { user: currentUser }, error: authError } =
+  await supabase.auth.getUser();
+
+if (authError) {
+  throw authError;
+}
 const { data: existingSubscription, error: lookupError } =
   await supabase
     .from("push_subscriptions")
@@ -1190,11 +1195,11 @@ if (lookupError) {
 if (!existingSubscription) {
   const { error: insertError } = await supabase
     .from("push_subscriptions")
-    .insert({
-      user_id: null,
-      endpoint: subscription.endpoint,
-      subscription: subscription.toJSON(),
-    });
+.insert({
+  user_id: currentUser?.id ?? null,
+  endpoint: subscription.endpoint,
+  subscription: subscription.toJSON(),
+});
 
 if (insertError) {
   console.error("구독 등록 실패:", insertError);
