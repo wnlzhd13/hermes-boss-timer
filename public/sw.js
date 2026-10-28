@@ -1,4 +1,5 @@
 self.addEventListener("push", (event) => {
+  console.log("푸시 이벤트 수신됨");
   let data = {
     title: "HERMES 3 BOSS TIMER",
     body: "보스 출현 알림입니다.",
