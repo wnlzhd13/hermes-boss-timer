@@ -22,19 +22,6 @@ function urlBase64ToUint8Array(base64String: string): Uint8Array<ArrayBuffer> {
 }
 
 
-if ("serviceWorker" in navigator) {
-  window.addEventListener("load", () => {
-    navigator.serviceWorker
-      .register("/sw.js")
-      .then((registration) => {
-        console.log("서비스 워커 등록 완료", registration);
-      })
-      .catch((error) => {
-        console.error("서비스 워커 등록 실패", error);
-      });
-  });
-}
-
 type BossType = "daily" | "weekly";
 type FilterType = "all" | BossType;
 
@@ -94,7 +81,7 @@ function bossFromDatabase(row: any): Boss {
 
 const STORAGE_KEY = "hermes-boss-timer-v3";
 const FIVE_MINUTES = 5 * 60 * 1000;
-const THREE_MINUTES = 1 * 60 * 1000;
+const ONE_MINUTE = 1 * 60 * 1000;
 const WEEK_MS = 7 * 24 * 60 * 60 * 1000;
 
 function localDateTimeValue(timestamp: number): string {
@@ -953,7 +940,7 @@ useEffect(() => {
         const spawnTime = boss.nextSpawnAt;
 
 // 출현 예정 시각으로부터 3분이 지났는지 확인
-if (currentTime < spawnTime + THREE_MINUTES) {
+if (currentTime < spawnTime + ONE_MINUTE) {
   return;
 }
 
