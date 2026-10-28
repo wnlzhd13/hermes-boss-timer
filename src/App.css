@@ -1224,7 +1224,7 @@ select:focus-visible {
       rgba(7, 13, 25, 0.45) 55%,
       rgba(8, 13, 25, 0.18) 100%
     ),
-    url("/ZEUS-HEADER.PNG.PNG") center 35% / cover no-repeat;
+    url("/zeus-header.png.png") center 35% / cover no-repeat;
 
   box-shadow:
     0 8px 24px rgba(0, 0, 0, 0.4),
