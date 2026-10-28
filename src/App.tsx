@@ -431,7 +431,9 @@ async function handleAddToHomeScreen() {
   }, []);
   
   const [bosses, setBosses] = useState<Boss[]>(loadBosses);
-  const [alarmEnabled, setAlarmEnabled] = useState(false);
+  const [alarmEnabled, setAlarmEnabled] = useState(
+  () => localStorage.getItem("hermes-alarm-enabled") === "true"
+);
   const notifiedBosses = useRef<Set<string>>(new Set());
   const autoCutProcessed = useRef<Set<string>>(new Set());
   const [sessionChecked, setSessionChecked] = useState(false);
