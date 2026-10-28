@@ -1223,22 +1223,130 @@ if (existingSubscription) {
 }
 
 
+onClick={async () => {
+  if (alarmEnabled) {
+    setAlarmEnabled(false);
+    localStorage.setItem("hermes-alarm-enabled", "false");
+    return;
+  }
 
-      setAlarmEnabled(true);
-      localStorage.setItem("hermes-alarm-enabled", "true");
-
-      alert("푸시 알림 설정이 완료되었습니다.");
-    } catch (error) {
-      console.error("푸시 알림 설정 오류:", error);
-
-alert(
-  "푸시 알림 설정 실패\n" +
-    (error instanceof Error
-      ? error.message
-      : JSON.stringify(error))
-);
+  try {
+    if (!("serviceWorker" in navigator) || !("PushManager" in window)) {
+      alert("이 브라우저는 푸시 알림을 지원하지 않습니다.");
+      return;
     }
-  }}
+
+    if (!("Notification" in window)) {
+      alert("이 브라우저는 알림을 지원하지 않습니다.");
+      return;
+    }
+
+    if (!VAPID_PUBLIC_KEY) {
+      alert("VAPID 공개키 설정을 확인해 주세요.");
+      return;
+    }
+
+    if (Notification.permission === "denied") {
+      alert(
+        "알림 권한이 차단되어 있습니다.\n" +
+        "휴대폰 설정에서 앱 또는 사이트의 알림을 허용해 주세요."
+      );
+      return;
+    }
+
+    const permission =
+      Notification.permission === "granted"
+        ? "granted"
+        : await Notification.requestPermission();
+
+    if (permission !== "granted") {
+      alert("알림 권한이 허용되지 않았습니다. 알림 ON을 완료할 수 없습니다.");
+      return;
+    }
+
+    const registration = await navigator.serviceWorker.ready;
+
+    let subscription = await registration.pushManager.getSubscription();
+
+    if (!subscription) {
+      subscription = await registration.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY),
+      });
+    }
+
+    const {
+      data: { user: currentUser },
+      error: authError,
+    } = await supabase.auth.getUser();
+
+    if (authError) {
+      throw authError;
+    }
+
+    const subscriptionData = {
+      user_id: currentUser?.id ?? null,
+      endpoint: subscription.endpoint,
+      subscription: subscription.toJSON(),
+      user_agent: navigator.userAgent,
+    };
+
+    const { data: existingSubscription, error: lookupError } =
+      await supabase
+        .from("push_subscriptions")
+        .select("id")
+        .eq("endpoint", subscription.endpoint)
+        .maybeSingle();
+
+    if (lookupError) {
+      throw lookupError;
+    }
+
+    if (existingSubscription) {
+      const { error: updateError } = await supabase
+        .from("push_subscriptions")
+        .update(subscriptionData)
+        .eq("id", existingSubscription.id);
+
+      if (updateError) {
+        throw updateError;
+      }
+    } else {
+      const { error: insertError } = await supabase
+        .from("push_subscriptions")
+        .insert(subscriptionData);
+
+      if (insertError) {
+        throw insertError;
+      }
+    }
+
+    // 휴대폰에서 즉시 알림 표시 테스트
+    await registration.showNotification("보스타임 알림 테스트", {
+      body: "휴대폰 알림 표시 테스트입니다.",
+      icon: "/icon-192.png",
+      tag: "push-setup-test",
+      data: { url: "/" },
+    });
+
+    setAlarmEnabled(true);
+    localStorage.setItem("hermes-alarm-enabled", "true");
+
+    alert(
+      "푸시 구독 등록을 완료했습니다.\n" +
+      "휴대폰에 테스트 알림이 표시되는지 확인해 주세요."
+    );
+  } catch (error) {
+    console.error("푸시 알림 설정 오류:", error);
+
+    alert(
+      "푸시 알림 설정 실패\n" +
+      (error instanceof Error
+        ? error.message
+        : JSON.stringify(error))
+    );
+  }
+}}
 >
   {alarmEnabled ? "🔔 알림 ON" : "🔕 알림 OFF"}
 </button>
