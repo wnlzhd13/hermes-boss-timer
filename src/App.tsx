@@ -1174,21 +1174,29 @@ if (isMembersPage) {
       }
 
 
-const { error } = await supabase
-  .from("push_subscriptions")
-  .upsert(
-    {
+const { data: existingSubscription, error: lookupError } =
+  await supabase
+    .from("push_subscriptions")
+    .select("id")
+    .eq("endpoint", subscription.endpoint)
+    .maybeSingle();
+
+if (lookupError) {
+  throw lookupError;
+}
+
+if (!existingSubscription) {
+  const { error: insertError } = await supabase
+    .from("push_subscriptions")
+    .insert({
       user_id: null,
       endpoint: subscription.endpoint,
       subscription: subscription.toJSON(),
-    },
-    { onConflict: "endpoint" }
-  );
+    });
 
-if (error) {
-  console.error("구독 저장 실패:", error);
-  alert("구독 저장 실패: " + error.message);
-  return;
+  if (insertError) {
+    throw insertError;
+  }
 }
 
 
