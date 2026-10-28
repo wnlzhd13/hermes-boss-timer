@@ -1154,13 +1154,7 @@ if (isMembersPage) {
         return;
       }
 
-      const { data: userData, error: userError } =
-        await supabase.auth.getUser();
-
-      if (userError || !userData.user) {
-        alert("로그인 후 알림을 설정해 주세요.");
-        return;
-      }
+const userData = { user: null };
 
       const registration = await navigator.serviceWorker.ready;
 
@@ -1179,7 +1173,7 @@ if (isMembersPage) {
         .from("push_subscriptions")
         .upsert(
           {
-            user_id: userData.user.id,
+            user_id: null,
             endpoint: subscription.endpoint,
             subscription: subscription.toJSON(),
           },
