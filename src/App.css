@@ -1199,3 +1199,101 @@ select:focus-visible {
     animation: none;
   }
 }
+
+/* ===== 제우스 신화풍 보스 타이머 헤더 ===== */
+
+.app-header {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  min-height: 150px;
+  margin-bottom: 18px;
+  padding: 24px 22px;
+  overflow: hidden;
+  border: 1px solid rgba(210, 170, 88,  0.55);
+  border-radius: 14px;
+  background:
+    linear-gradient(
+      90deg,
+      rgba(5, 10, 21, 0.96) 0%,
+      rgba(7, 13, 25, 0.88) 48%,
+      rgba(8, 13, 25, 0.5) 100%
+    ),
+    radial-gradient(
+      ellipse at 80% 20%,
+      rgba(218, 168, 64, 0.2),
+      transparent 55%
+    ),
+    linear-gradient(135deg, #182236, #050912);
+  box-shadow:
+    0 8px 24px rgba(0, 0, 0, 0.4),
+    inset 0 0 25px rgba(202, 159, 71, 0.06);
+}
+
+/* 헤더 안의 텍스트와 버튼을 배경 위로 표시 */
+.app-header > * {
+  position: relative;
+  z-index: 1;
+}
+
+.brand {
+  min-width: 0;
+}
+
+.app-header h1 {
+  color: #f5d88e;
+  font-size: clamp(22px, 4vw, 32px);
+  font-weight: 900;
+  line-height: 1.35;
+  letter-spacing: -0.5px;
+  text-shadow:
+    0 0 12px rgba(225, 177, 72, 0.3),
+    0 2px 4px rgba(0, 0, 0, 0.8);
+}
+
+.app-header .subtitle {
+  margin-top: 9px;
+  color: #e0c78e;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 3px;
+}
+
+.developer-credit {
+  color: #e9d7ad;
+}
+
+.admin-toggle {
+  border-color: rgba(210, 170, 88, 0.5);
+  color: #f0dba9;
+  background: rgba(13, 20, 34, 0.9);
+}
+
+.admin-toggle.active {
+  border-color: #4edb83;
+  color: #7df0a4;
+  background: rgba(20, 55, 37, 0.95);
+}
+
+/* 모바일 헤더 */
+@media (max-width: 650px) {
+  .app-header {
+    min-height: 115px;
+    gap: 8px;
+    padding: 16px 12px;
+    border-radius: 11px;
+  }
+
+  .app-header h1 {
+    font-size: clamp(17px, 4.5vw, 25px);
+  }
+
+  .app-header .subtitle {
+    margin-top: 6px;
+    font-size: 11px;
+    letter-spacing: 2px;
+  }
+}
