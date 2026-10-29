@@ -4,6 +4,17 @@ import type { FormEvent } from "react";
 import "./App.css";
 import { supabase } from "./supabase";
 
+declare global {
+  interface Window {
+    AndroidPush?: {
+      enableNotifications: () => void;
+      getFcmToken: () => void;
+    };
+    onAndroidFcmToken?: (token: string) => void;
+    onAndroidPushError?: (message: string) => void;
+  }
+}
+
 const VAPID_PUBLIC_KEY = import.meta.env.VITE_VAPID_PUBLIC_KEY as string;
 
 function urlBase64ToUint8Array(base64String: string): Uint8Array<ArrayBuffer> {
