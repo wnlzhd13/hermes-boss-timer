@@ -773,6 +773,7 @@ useEffect(() => {
     setFormOpen(true);
   }
 
+
   function openEditForm(boss: Boss) {
     const remainingMs = Math.max(0, boss.nextSpawnAt - Date.now());
     const totalMinutes = Math.ceil(remainingMs / 60_000);
@@ -787,10 +788,14 @@ useEffect(() => {
       respawnHours: String(boss.respawnHours),
       remainingHours: String(Math.floor(totalMinutes / 60)),
       remainingMinutes: String(totalMinutes % 60),
+      autoCutEnabled: boss.autoCutEnabled,
+      autoCutMinutes: String(boss.autoCutMinutes),
     });
     setFormError("");
     setFormOpen(true);
   }
+
+
 
   function closeForm() {
     setFormOpen(false);
@@ -872,22 +877,25 @@ useEffect(() => {
         return;
       }
 
-      setBosses((current) =>
-        current.map((boss) =>
-          boss.id === editingId
-            ? {
-                ...boss,
-                name,
-                grade: form.grade,
-                location,
-                type: form.type,
-                respawnHours: form.type === "daily" ? respawnHours : 168,
-                nextSpawnAt: newNextSpawnAt,
-                cutAt: undefined,
-              }
-            : boss
-        )
-      );
+setBosses((current) =>
+  current.map((boss) =>
+    boss.id === editingId
+      ? {
+          ...boss,
+          name,
+          grade: form.grade,
+          location,
+          type: form.type,
+          respawnHours: form.type === "daily" ? respawnHours : 168,
+          nextSpawnAt: newNextSpawnAt,
+          cutAt: undefined,
+          autoCutEnabled: form.autoCutEnabled,
+          autoCutMinutes,
+        }
+      : boss
+  )
+);
+      
     } else {
       const firstSpawnAt = new Date(form.firstSpawnAt).getTime();
 
@@ -896,20 +904,22 @@ useEffect(() => {
         return;
       }
 
-      const { data, error } = await supabase
-        .from("bosses")
-        .insert({
-          name,
-          grade: form.grade,
-          location,
-          boss_type: form.type,
-          first_spawn_at: new Date(firstSpawnAt).toISOString(),
-          next_spawn_at: new Date(firstSpawnAt).toISOString(),
-          respawn_hours: form.type === "daily" ? respawnHours : 168,
-          cut_count: 0,
-        })
-        .select()
-        .single();
+const { data, error } = await supabase
+  .from("bosses")
+  .insert({
+    name,
+    grade: form.grade,
+    location,
+    boss_type: form.type,
+    first_spawn_at: new Date(firstSpawnAt).toISOString(),
+    next_spawn_at: new Date(firstSpawnAt).toISOString(),
+    respawn_hours: form.type === "daily" ? respawnHours : 168,
+    cut_count: 0,
+    auto_cut_enabled: form.autoCutEnabled,
+    auto_cut_minutes: autoCutMinutes,
+  })
+  .select()
+  .single();
 
       if (error) {
         setFormError("보스 추가 실패: " + error.message);
@@ -990,39 +1000,52 @@ useEffect(() => {
     setNow(cutTime);
   }
 
-    useEffect(() => {
-    if (!sessionChecked || !loggedIn || !approved || !isAdmin) {
-      return;
-    }
+   useEffect(() => {
+  if (!sessionChecked || !loggedIn || !approved || !isAdmin) {
+    return;
+  }
 
-    const checkAutoCut = () => {
-      const currentTime = Date.now();
+  const checkAutoCut = () => {
+    const currentTime = Date.now();
 
-      bosses.forEach((boss) => {
-        const spawnTime = boss.nextSpawnAt;
+    bosses.forEach((boss) => {
+      // 자동컷을 사용하지 않는 보스는 건너뜁니다.
+      if (!boss.autoCutEnabled) {
+        return;
+      }
 
-// 출현 예정 시각으로부터 3분이 지났는지 확인
-if (currentTime < spawnTime + ONE_MINUTE) {
-  return;
-}
+      const spawnTime = boss.nextSpawnAt;
 
-        // 같은 출현 일정의 중복 컷 방지
-        const key = `${boss.id}-${spawnTime}`;
+      // 보스 출현 후 설정한 분이 지났는지 확인합니다.
+      if (
+        currentTime <
+        spawnTime + boss.autoCutMinutes * ONE_MINUTE
+      ) {
+        return;
+      }
 
-        if (autoCutProcessed.current.has(key)) {
-          return;
-        }
+      // 같은 출현 일정의 중복 컷을 방지합니다.
+      const key = `${boss.id}-${spawnTime}`;
 
-        autoCutProcessed.current.add(key);
+      if (autoCutProcessed.current.has(key)) {
+        return;
+      }
 
-        void recordCut(boss.id).catch((error) => {
-          console.error("자동 컷 처리 실패:", error);
-          autoCutProcessed.current.delete(key);
-        });
+      autoCutProcessed.current.add(key);
+
+      void recordCut(boss.id).catch((error) => {
+        console.error("자동 컷 처리 실패:", error);
+        autoCutProcessed.current.delete(key);
       });
-    };
+    });
+  };
 
-    checkAutoCut();
+  checkAutoCut();
+
+  const timer = window.setInterval(checkAutoCut, 1000);
+
+  return () => window.clearInterval(timer);
+}, [sessionChecked, loggedIn, approved, isAdmin, bosses]);
 
     const timer = window.setInterval(checkAutoCut, 1000);
 
@@ -1422,8 +1445,8 @@ if (isMembersPage) {
                     </span>
                     <span className="boss-grade">{boss.grade}</span>
                     <span className="countdown-label">
-                    {remaining <= 0
-  ? "보스 출현"
+{remaining <= 0
+  ? "보스출현"
   : `남은 시간 ${formatCountdown(boss.nextSpawnAt, now)}`}
                     </span>
                   </div>
