@@ -1411,79 +1411,110 @@ select:focus-visible {
   font-weight: 800;
 }
 
-/* ===== 보스 카드 테두리 릴레이 효과 ===== */
+/* ===== 사각형 보스 카드 테두리 릴레이 ===== */
 
+/* 출현 임박 및 출현 카드 기준 */
 .boss-card.spawn-imminent,
 .boss-card.boss-spawned {
   position: relative;
   isolation: isolate;
-  overflow: hidden;
 }
 
-/* 빛이 테두리를 따라 회전하는 공통 효과 */
+/* 이동하는 직선 빛 */
 .boss-card.spawn-imminent::before,
 .boss-card.boss-spawned::before {
   content: "";
   position: absolute;
-  inset: 0;
-  padding: 2px;
-  border-radius: inherit;
+  z-index: 5;
   pointer-events: none;
-  z-index: 0;
-
-  -webkit-mask:
-    linear-gradient(#fff 0 0) content-box,
-    linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
-
-  animation: boss-border-relay 3s linear infinite;
+  border-radius: 3px;
+  background: #ffffff;
+  box-shadow: 0 0 7px 2px currentColor;
+  color: #ff304f;
+  animation: rectangle-border-relay 4s linear infinite;
 }
 
-/* 카드 내용은 빛 효과 위에 표시 */
-.boss-card.spawn-imminent > *,
-.boss-card.boss-spawned > * {
-  position: relative;
-  z-index: 1;
-}
-
-/* 출현 10분 전: 빨간빛 */
+/* 빨간색: 출현 10분 전 */
 .boss-card.spawn-imminent::before {
-  background: conic-gradient(
-    from 0deg,
-    transparent 0deg,
-    transparent 285deg,
-    #ff304f 320deg,
-    #ffffff 340deg,
-    #ff304f 350deg,
-    transparent 360deg
-  );
-  filter: drop-shadow(0 0 5px #ff304f);
+  color: #ff304f;
+  background: #ff304f;
 }
 
-/* 보스 출현 후: 노란빛 */
+/* 노란색: 보스 출현 후 */
 .boss-card.boss-spawned::before {
-  background: conic-gradient(
-    from 0deg,
-    transparent 0deg,
-    transparent 285deg,
-    #ffd43b 320deg,
-    #ffffff 340deg,
-    #ffd43b 350deg,
-    transparent 360deg
-  );
-  filter: drop-shadow(0 0 5px #ffd43b);
+  color: #ffd43b;
+  background: #ffd43b;
 }
 
-/* 빛의 순환 */
-@keyframes boss-border-relay {
-  from {
-    transform: rotate(0deg);
+/* 위 → 오른쪽 → 아래 → 왼쪽 */
+@keyframes rectangle-border-relay {
+  0% {
+    top: 0;
+    left: 0;
+    width: 28%;
+    height: 3px;
   }
 
-  to {
-    transform: rotate(360deg);
+  24% {
+    top: 0;
+    left: 72%;
+    width: 28%;
+    height: 3px;
   }
+
+  25% {
+    top: 0;
+    left: calc(100% - 3px);
+    width: 3px;
+    height: 28%;
+  }
+
+  49% {
+    top: 72%;
+    left: calc(100% - 3px);
+    width: 3px;
+    height: 28%;
+  }
+
+  50% {
+    top: calc(100% - 3px);
+    left: 72%;
+    width: 28%;
+    height: 3px;
+  }
+
+  74% {
+    top: calc(100% - 3px);
+    left: 0;
+    width: 28%;
+    height: 3px;
+  }
+
+  75% {
+    top: 72%;
+    left: 0;
+    width: 3px;
+    height: 28%;
+  }
+
+  99% {
+    top: 0;
+    left: 0;
+    width: 3px;
+    height: 28%;
+  }
+
+  100% {
+    top: 0;
+    left: 0;
+    width: 28%;
+    height: 3px;
+  }
+}
+
+/* 출현 후에는 기존 노란색 스타일 유지 */
+.boss-card.boss-spawned {
+  animation: none !important;
 }
 
 /* 움직임 최소화 설정 */
