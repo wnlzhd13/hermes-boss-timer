@@ -1270,22 +1270,6 @@ if (isMembersPage) {
   )
 )}
 
-      
-      <section className="summary">
-        <div className="summary-item">
-          <span className="summary-label">전체 보스</span>
-          <strong>{bosses.length}</strong>
-        </div>
-        <div className="summary-item">
-          <span className="summary-label">일일 보스</span>
-          <strong>{bosses.filter((boss) => boss.type === "daily").length}</strong>
-        </div>
-        <div className="summary-item">
-          <span className="summary-label">주간 보스</span>
-          <strong>{bosses.filter((boss) => boss.type === "weekly").length}</strong>
-        </div>
-      </section>
-
       <nav className="filters">
         {(
           [
@@ -1376,9 +1360,9 @@ if (isMembersPage) {
                     </span>
                     <span className="boss-grade">{boss.grade}</span>
                     <span className="countdown-label">
-                      {remaining <= 0
-                        ? "출현 시간 경과"
-                        : `남은 시간 ${formatCountdown(boss.nextSpawnAt, now)}`}
+                    {remaining <= 0
+  ? "보스 출현"
+  : `남은 시간 ${formatCountdown(boss.nextSpawnAt, now)}`}
                     </span>
                   </div>
 
