@@ -1000,52 +1000,44 @@ const { data, error } = await supabase
     setNow(cutTime);
   }
 
-   useEffect(() => {
-  if (!sessionChecked || !loggedIn || !approved || !isAdmin) {
-    return;
-  }
+  useEffect(() => {
+    if (!sessionChecked || !loggedIn || !approved || !isAdmin) {
+      return;
+    }
 
-  const checkAutoCut = () => {
-    const currentTime = Date.now();
+    const checkAutoCut = () => {
+      const currentTime = Date.now();
 
-    bosses.forEach((boss) => {
-      // 자동컷을 사용하지 않는 보스는 건너뜁니다.
-      if (!boss.autoCutEnabled) {
-        return;
-      }
+      bosses.forEach((boss) => {
+        if (!boss.autoCutEnabled) {
+          return;
+        }
 
-      const spawnTime = boss.nextSpawnAt;
+        const spawnTime = boss.nextSpawnAt;
 
-      // 보스 출현 후 설정한 분이 지났는지 확인합니다.
-      if (
-        currentTime <
-        spawnTime + boss.autoCutMinutes * ONE_MINUTE
-      ) {
-        return;
-      }
+        if (
+          currentTime <
+          spawnTime + boss.autoCutMinutes * ONE_MINUTE
+        ) {
+          return;
+        }
 
-      // 같은 출현 일정의 중복 컷을 방지합니다.
-      const key = `${boss.id}-${spawnTime}`;
+        const key = `${boss.id}-${spawnTime}`;
 
-      if (autoCutProcessed.current.has(key)) {
-        return;
-      }
+        if (autoCutProcessed.current.has(key)) {
+          return;
+        }
 
-      autoCutProcessed.current.add(key);
+        autoCutProcessed.current.add(key);
 
-      void recordCut(boss.id).catch((error) => {
-        console.error("자동 컷 처리 실패:", error);
-        autoCutProcessed.current.delete(key);
+        void recordCut(boss.id).catch((error) => {
+          console.error("자동 컷 처리 실패:", error);
+          autoCutProcessed.current.delete(key);
+        });
       });
-    });
-  };
+    };
 
-  checkAutoCut();
-
-  const timer = window.setInterval(checkAutoCut, 1000);
-
-  return () => window.clearInterval(timer);
-}, [sessionChecked, loggedIn, approved, isAdmin, bosses]);
+    checkAutoCut();
 
     const timer = window.setInterval(checkAutoCut, 1000);
 
