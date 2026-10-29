@@ -1392,9 +1392,11 @@ if (isMembersPage) {
   className={`boss-card ${
     boss.id === nextBossId ? "next-boss" : ""
   } ${
-    remaining <= 10 * 60 * 1000
+    remaining > 0 && remaining <= 10 * 60 * 1000
       ? "spawn-imminent"
       : ""
+  } ${
+    remaining <= 0 ? "boss-spawned" : ""
   }`}
 >
 
@@ -1438,7 +1440,7 @@ if (isMembersPage) {
                     <span className="boss-grade">{boss.grade}</span>
                     <span className="countdown-label">
 {remaining <= 0
-  ? "보스출현"
+  ? "보스 출현"
   : `남은 시간 ${formatCountdown(boss.nextSpawnAt, now)}`}
                     </span>
                   </div>
