@@ -1492,3 +1492,21 @@ select:focus-visible {
     animation: none;
   }
 }
+
+/* 모바일 릴레이 애니메이션 보정 */
+@media (max-width: 650px) {
+  .boss-card.spawn-imminent::before,
+  .boss-card.spawn-imminent::after,
+  .boss-card.boss-spawned::before,
+  .boss-card.boss-spawned::after {
+    animation: boss-rectangle-relay 4s linear infinite !important;
+    -webkit-animation: boss-rectangle-relay 4s linear infinite !important;
+    animation-play-state: running !important;
+  }
+
+  .boss-card.spawn-imminent::after,
+  .boss-card.boss-spawned::after {
+    animation-delay: -2s !important;
+    -webkit-animation-delay: -2s !important;
+  }
+}
