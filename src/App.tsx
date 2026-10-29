@@ -1450,25 +1450,36 @@ if (isMembersPage) {
                   )}
 
 {isAdmin && adminMode && (
-                    <div className="boss-admin-actions">
-                      <button
-                        className="edit-button"
-                        onClick={() =>
-                          isEditingThisBoss
-                            ? closeForm()
-                            : openEditForm(boss)
-                        }
-                      >
-                        {isEditingThisBoss ? "수정 닫기" : "수정"}
-                      </button>
-                      <button
-                        className="delete-button"
-                        onClick={() => deleteBoss(boss)}
-                      >
-                        삭제
-                      </button>
-                    </div>
-                  )}
+  <div className="boss-admin-actions">
+    <span
+      className={`auto-cut-status ${
+        boss.autoCutEnabled ? "enabled" : "disabled"
+      }`}
+    >
+      {boss.autoCutEnabled
+        ? `자동컷 ${boss.autoCutMinutes}분`
+        : "자동컷 OFF"}
+    </span>
+
+    <button
+      className="edit-button"
+      onClick={() =>
+        isEditingThisBoss
+          ? closeForm()
+          : openEditForm(boss)
+      }
+    >
+      {isEditingThisBoss ? "수정 닫기" : "수정"}
+    </button>
+
+    <button
+      className="delete-button"
+      onClick={() => deleteBoss(boss)}
+    >
+      삭제
+    </button>
+  </div>
+)}
                 </div>
 
                 {showCut && isAdmin && adminMode && (
