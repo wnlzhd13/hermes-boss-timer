@@ -45,6 +45,8 @@ type Boss = {
   respawnHours: number;
   cutAt?: number;
   cutCount: number;
+  autoCutEnabled: boolean;
+  autoCutMinutes: number;
 };
 
 type BossForm = {
@@ -56,6 +58,8 @@ type BossForm = {
   respawnHours: string;
   remainingHours: string;
   remainingMinutes: string;
+  autoCutEnabled: boolean;
+  autoCutMinutes: string;
 };
 
 function bossFromDatabase(row: any): Boss {
