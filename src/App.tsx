@@ -805,6 +805,18 @@ useEffect(() => {
     const location = form.location.trim();
     const respawnHours = Number(form.respawnHours);
 
+        const autoCutMinutes = Number(form.autoCutMinutes);
+
+    if (
+      form.autoCutEnabled &&
+      (!Number.isInteger(autoCutMinutes) ||
+        autoCutMinutes < 1 ||
+        autoCutMinutes > 1440)
+    ) {
+      setFormError("자동컷 시간은 1~1440분 사이로 입력해 주세요.");
+      return;
+    }
+
     if (!name) {
       setFormError("보스 이름을 입력해 주세요.");
       return;
@@ -850,6 +862,8 @@ useEffect(() => {
           respawn_hours: form.type === "daily" ? respawnHours : 168,
           next_spawn_at: new Date(newNextSpawnAt).toISOString(),
           last_killed_at: null,
+          auto_cut_enabled: form.autoCutEnabled,
+          auto_cut_minutes: autoCutMinutes,
         })
         .eq("id", editingId);
 
