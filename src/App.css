@@ -1410,3 +1410,86 @@ select:focus-visible {
 .boss-card.boss-spawned .countdown-label {
   font-weight: 800;
 }
+
+/* ===== 보스 카드 테두리 릴레이 효과 ===== */
+
+.boss-card.spawn-imminent,
+.boss-card.boss-spawned {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+
+/* 빛이 테두리를 따라 회전하는 공통 효과 */
+.boss-card.spawn-imminent::before,
+.boss-card.boss-spawned::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  padding: 2px;
+  border-radius: inherit;
+  pointer-events: none;
+  z-index: 0;
+
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+
+  animation: boss-border-relay 3s linear infinite;
+}
+
+/* 카드 내용은 빛 효과 위에 표시 */
+.boss-card.spawn-imminent > *,
+.boss-card.boss-spawned > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* 출현 10분 전: 빨간빛 */
+.boss-card.spawn-imminent::before {
+  background: conic-gradient(
+    from 0deg,
+    transparent 0deg,
+    transparent 285deg,
+    #ff304f 320deg,
+    #ffffff 340deg,
+    #ff304f 350deg,
+    transparent 360deg
+  );
+  filter: drop-shadow(0 0 5px #ff304f);
+}
+
+/* 보스 출현 후: 노란빛 */
+.boss-card.boss-spawned::before {
+  background: conic-gradient(
+    from 0deg,
+    transparent 0deg,
+    transparent 285deg,
+    #ffd43b 320deg,
+    #ffffff 340deg,
+    #ffd43b 350deg,
+    transparent 360deg
+  );
+  filter: drop-shadow(0 0 5px #ffd43b);
+}
+
+/* 빛의 순환 */
+@keyframes boss-border-relay {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* 움직임 최소화 설정 */
+@media (prefers-reduced-motion: reduce) {
+  .boss-card.spawn-imminent::before,
+  .boss-card.boss-spawned::before {
+    animation: none;
+  }
+}
