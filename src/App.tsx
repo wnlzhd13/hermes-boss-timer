@@ -70,8 +70,8 @@ function bossFromDatabase(row: any): Boss {
     location: row.location,
     type: row.boss_type,
     firstSpawnAt: (row.first_spawn_at ?? row.flrst_spawn_at)
-    ? new Date(row.first_spawn_at ?? row.flrst_spawn_at).getTime()
-    : 0,
+      ? new Date(row.first_spawn_at ?? row.flrst_spawn_at).getTime()
+      : 0,
     nextSpawnAt: row.next_spawn_at
       ? new Date(row.next_spawn_at).getTime()
       : 0,
@@ -80,6 +80,8 @@ function bossFromDatabase(row: any): Boss {
       ? new Date(row.last_killed_at).getTime()
       : undefined,
     cutCount: row.cut_count ?? 0,
+    autoCutEnabled: row.auto_cut_enabled ?? false,
+    autoCutMinutes: Number(row.auto_cut_minutes ?? 1),
   };
 }
 
@@ -103,6 +105,8 @@ function createEmptyForm(): BossForm {
     respawnHours: "6",
     remainingHours: "1",
     remainingMinutes: "0",
+    autoCutEnabled: false,
+    autoCutMinutes: "1",
   };
 }
 
