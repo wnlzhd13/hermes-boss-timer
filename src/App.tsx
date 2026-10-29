@@ -314,6 +314,46 @@ function BossEditor({
             </label>
           )}
 
+          <fieldset className="full-width type-fieldset">
+            <legend>자동컷 설정</legend>
+
+            <label className="radio-option">
+              <input
+                type="checkbox"
+                checked={form.autoCutEnabled}
+                onChange={(event) =>
+                  setForm({
+                    ...form,
+                    autoCutEnabled: event.target.checked,
+                  })
+                }
+              />
+              <span>
+                <strong>자동컷 사용</strong>
+                <small>보스 출현 후 설정한 시간이 지나면 자동으로 컷 기록합니다.</small>
+              </span>
+            </label>
+
+            <label className="full-width">
+              출현 후 자동컷까지 시간 (분)
+              <input
+                type="number"
+                min="1"
+                max="1440"
+                step="1"
+                value={form.autoCutMinutes}
+                onChange={(event) =>
+                  setForm({
+                    ...form,
+                    autoCutMinutes: event.target.value,
+                  })
+                }
+                disabled={!form.autoCutEnabled}
+                required={form.autoCutEnabled}
+              />
+            </label>
+          </fieldset>
+          
           {form.type === "daily" && (
             <label className="full-width">
               컷 후 재출현 주기 (시간)
